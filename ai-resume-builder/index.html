@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Résumé Forge — AI Resume & Portfolio Builder</title>
+<style>
+  :root{
+    --navy:#0a2540;
+    --navy-2:#123a5e;
+    --blue:#2f6fed;
+    --sky:#e8f0fe;
+    --paper:#f6f8fb;
+    --ink:#0a2540;
+    --line:rgba(10,37,64,.12);
+    --gold:#f0b429;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI",system-ui,-apple-system,sans-serif;background:var(--paper);color:var(--ink);line-height:1.6;overflow-x:hidden}
+  h1,h2,h3{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.02em}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+  a{color:inherit;text-decoration:none}
+
+  header.nav{position:sticky;top:0;z-index:60;background:rgba(246,248,251,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:70px;gap:20px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.2rem;font-family:Georgia,serif}
+  .logo .mark{width:36px;height:36px;border-radius:10px;background:var(--navy);color:var(--gold);display:grid;place-items:center;font-size:1.1rem}
+  .nav-links{display:flex;gap:24px;font-size:.92rem;font-weight:600}
+  .nav-links a{opacity:.72;transition:.2s}
+  .nav-links a:hover{opacity:1;color:var(--blue)}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:10px;font-weight:700;font-size:.9rem;border:none;cursor:pointer;transition:transform .18s,box-shadow .18s;font-family:inherit}
+  .btn-blue{background:var(--blue);color:#fff}
+  .btn-blue:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(47,111,237,.35)}
+  .btn-navy{background:var(--navy);color:#fff}
+  .btn-navy:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(10,37,64,.3)}
+  .btn-ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+  .btn-ghost:hover{background:rgba(10,37,64,.05)}
+
+  .hero{padding:70px 0 50px;position:relative;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:0;background:radial-gradient(600px 400px at 88% 5%,rgba(47,111,237,.16),transparent 65%),radial-gradient(500px 400px at 0% 95%,rgba(240,180,41,.14),transparent 70%);z-index:-1}
+  .hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:center}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:.78rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:22px;color:var(--blue)}
+  .hero h1{font-size:clamp(2.2rem,4.8vw,3.4rem);line-height:1.08;margin-bottom:18px}
+  .hero h1 span{color:var(--blue)}
+  .hero p{opacity:.78;font-size:1.08rem;max-width:520px;margin-bottom:28px}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:30px}
+  .trust{display:flex;gap:26px;flex-wrap:wrap;font-size:.82rem;font-weight:700;opacity:.7}
+  .trust span{display:flex;align-items:center;gap:7px}
+
+  /* RESUME PREVIEW */
+  .resume{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 24px 60px rgba(10,37,64,.14);padding:30px;position:relative}
+  .resume .rhead{display:flex;gap:18px;align-items:center;border-bottom:2px solid var(--navy);padding-bottom:16px;margin-bottom:16px}
+  .resume .rav{width:64px;height:64px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:1.4rem;font-weight:800;font-family:Georgia,serif}
+  .resume .rname{font-size:1.3rem;font-weight:800;font-family:Georgia,serif}
+  .resume .rrole{font-size:.85rem;color:var(--blue);font-weight:700}
+  .resume .rcontact{font-size:.74rem;opacity:.6;margin-top:3px}
+  .resume .rsec{margin-bottom:14px}
+  .resume .rsec h4{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:6px;font-family:"Segoe UI",sans-serif}
+  .resume .rsec p,.resume .rsec li{font-size:.8rem;opacity:.8}
+  .resume .rsec ul{list-style:none;display:grid;gap:4px}
+  .resume .rsec li::before{content:"▸ ";color:var(--gold)}
+  .ai-badge{position:absolute;top:-12px;right:20px;background:var(--gold);color:var(--navy);font-size:.7rem;font-weight:800;padding:5px 12px;border-radius:999px;text-transform:uppercase;letter-spacing:.05em;box-shadow:0 6px 16px rgba(240,180,41,.4)}
+
+  section{padding:64px 0}
+  .sec-head{text-align:center;max-width:640px;margin:0 auto 42px}
+  .sec-head h2{font-size:clamp(1.8rem,3.6vw,2.4rem);margin-bottom:12px}
+  .sec-head p{opacity:.72}
+  .kicker{font-size:.76rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);display:block;margin-bottom:10px}
+
+  .features{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .feature{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:28px;transition:transform .25s,box-shadow .25s}
+  .feature:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(10,37,64,.1)}
+  .feature .ic{width:48px;height:48px;border-radius:13px;display:grid;place-items:center;font-size:1.4rem;margin-bottom:16px;background:var(--sky)}
+  .feature h3{font-size:1.12rem;margin-bottom:8px}
+  .feature p{font-size:.9rem;opacity:.72}
+
+  /* BUILDER */
+  .builder{display:grid;grid-template-columns:1fr 1fr;gap:34px;align-items:start}
+  .panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:28px}
+  .panel h3{font-size:1.15rem;margin-bottom:6px}
+  .panel .sub{font-size:.85rem;opacity:.65;margin-bottom:20px}
+  .panel label{display:block;font-size:.8rem;font-weight:700;margin:14px 0 6px}
+  .panel input,.panel textarea,.panel select{width:100%;padding:11px 13px;border-radius:10px;border:1.5px solid var(--line);font-family:inherit;font-size:.9rem;background:var(--paper)}
+  .panel input:focus,.panel textarea:focus,.panel select:focus{outline:none;border-color:var(--blue);background:#fff}
+  .out{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:28px;min-height:420px}
+  .out .line{height:12px;border-radius:6px;background:var(--sky);margin-bottom:10px;animation:shimmer 1.4s infinite}
+  @keyframes shimmer{0%,100%{opacity:.5}50%{opacity:1}}
+  .gen-item{padding:12px 0;border-bottom:1px dashed var(--line);animation:fadeUp .4s both}
+  .gen-item:last-child{border-bottom:none}
+  .gen-item .lbl{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);margin-bottom:4px}
+  .gen-item .txt{font-size:.88rem;opacity:.85}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  /* INTERVIEW */
+  .interview{max-width:760px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:32px}
+  .interview .q{font-size:1.15rem;font-weight:700;font-family:Georgia,serif;margin-bottom:16px}
+  .interview textarea{width:100%;padding:14px;border-radius:12px;border:1.5px solid var(--line);font-family:inherit;font-size:.92rem;min-height:110px;resize:vertical}
+  .interview textarea:focus{outline:none;border-color:var(--blue)}
+  .feedback{margin-top:18px;padding:18px;border-radius:12px;background:var(--sky);font-size:.9rem;display:none}
+  .feedback.show{display:block;animation:fadeUp .4s}
+  .feedback b{color:var(--blue)}
+  .score-row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+  .score-chip{background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:.8rem;font-weight:700}
+
+  footer{background:var(--navy);color:#fff;padding:50px 0 30px;margin-top:30px}
+  .foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;margin-bottom:34px}
+  footer h4{font-size:1.15rem;margin-bottom:12px;font-family:Georgia,serif}
+  footer p,footer a{opacity:.62;font-size:.88rem}
+  footer a{display:block;margin-bottom:8px;transition:.2s}
+  footer a:hover{opacity:1}
+  .foot-bottom{border-top:1px solid rgba(255,255,255,.12);padding-top:22px;font-size:.8rem;opacity:.5;text-align:center}
+
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s}
+  .reveal.in{opacity:1;transform:none}
+
+  @media(max-width:960px){
+    .hero-grid,.builder,.features{grid-template-columns:1fr}
+    .nav-links{display:none}
+    .foot-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="logo"><span class="mark">R</span> Résumé Forge</div>
+    <nav class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#builder">Builder</a>
+      <a href="#interview">Interview prep</a>
+    </nav>
+    <button class="btn btn-blue" onclick="document.getElementById('builder').scrollIntoView()">Build my resume</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="pill">✦ AI-powered career toolkit</span>
+      <h1>Land the interview with a <span>resume that speaks</span>.</h1>
+      <p>Generate a polished resume, a tailored cover letter, a personal portfolio site and interview practice — all from a few details about you.</p>
+      <div class="hero-cta">
+        <button class="btn btn-blue" onclick="document.getElementById('builder').scrollIntoView()">Start building →</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('interview').scrollIntoView()">Practice interview</button>
+      </div>
+      <div class="trust">
+        <span>✓ ATS-optimised</span>
+        <span>✓ 40+ templates</span>
+        <span>✓ Free to start</span>
+      </div>
+    </div>
+    <div class="resume">
+      <span class="ai-badge">AI generated</span>
+      <div class="rhead">
+        <div class="rav">AR</div>
+        <div>
+          <div class="rname">Alex Rivera</div>
+          <div class="rrole">Product Designer</div>
+          <div class="rcontact">alex.rivera@email.com · San Francisco · linkedin.com/in/alexrivera</div>
+        </div>
+      </div>
+      <div class="rsec"><h4>Summary</h4><p>Product designer with 6 years crafting intuitive interfaces for fintech and SaaS. Led design for a platform serving 2M+ users.</p></div>
+      <div class="rsec"><h4>Experience</h4><ul><li>Senior Designer, Northwind — led redesign lifting activation 34%</li><li>Designer, PayLoop — shipped mobile app to 500k downloads</li></ul></div>
+      <div class="rsec"><h4>Skills</h4><p>Figma · Design Systems · User Research · Prototyping · HTML/CSS</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">One toolkit, four outputs</span>
+      <h2>Everything you need to get hired</h2>
+      <p>Stop stitching together five tools. Résumé Forge handles the whole application.</p>
+    </div>
+    <div class="features">
+      <div class="feature reveal"><div class="ic">📄</div><h3>AI resume writer</h3><p>Turn bullet points into achievement-driven statements recruiters actually read, tuned to the job description.</p></div>
+      <div class="feature reveal"><div class="ic">✉️</div><h3>Cover letters</h3><p>Personalised letters generated per application in seconds — no more generic templates.</p></div>
+      <div class="feature reveal"><div class="ic">🌐</div><h3>Portfolio website</h3><p>Publish a clean personal site with your projects, bio and contact form in one click.</p></div>
+      <div class="feature reveal"><div class="ic">🎤</div><h3>Interview practice</h3><p>Answer real questions and get instant feedback on structure, clarity and impact.</p></div>
+      <div class="feature reveal"><div class="ic">🎯</div><h3>ATS score</h3><p>See how your resume ranks against the job posting and fix gaps before you apply.</p></div>
+      <div class="feature reveal"><div class="ic">🔗</div><h3>LinkedIn optimiser</h3><p>Rewrite your headline and about section to match the roles you're targeting.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="builder" style="background:linear-gradient(180deg,transparent,rgba(232,240,254,.7),transparent)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">Try the builder</span>
+      <h2>Generate your resume content</h2>
+      <p>Fill in a few details and watch the AI draft your professional summary and bullets.</p>
+    </div>
+    <div class="builder">
+      <div class="panel reveal">
+        <h3>Your details</h3>
+        <p class="sub">Nothing is stored — this is a live demo.</p>
+        <label>Full name</label>
+        <input id="bName" value="Alex Rivera">
+        <label>Target role</label>
+        <input id="bRole" value="Product Designer">
+        <label>Years of experience</label>
+        <input id="bYears" type="number" value="6" min="0" max="40">
+        <label>Key skills (comma separated)</label>
+        <input id="bSkills" value="Figma, Design Systems, User Research, Prototyping">
+        <label>One achievement</label>
+        <textarea id="bAch" rows="2">Led a redesign that lifted user activation by 34%</textarea>
+        <button class="btn btn-blue" style="width:100%;justify-content:center;margin-top:20px" onclick="generateResume()">Generate with AI →</button>
+      </div>
+      <div class="out reveal" id="out">
+        <div class="line" style="width:60%"></div>
+        <div class="line" style="width:90%"></div>
+        <div class="line" style="width:75%"></div>
+        <div class="line" style="width:85%"></div>
+        <div class="line" style="width:50%"></div>
+        <p style="opacity:.5;font-size:.85rem;margin-top:16px">Your AI-generated content will appear here.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="interview">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">Interview practice</span>
+      <h2>Answer a real question</h2>
+      <p>Type your answer and get instant AI feedback on how to make it stronger.</p>
+    </div>
+    <div class="interview reveal">
+      <div class="q" id="iq">Tell me about a time you solved a difficult problem at work.</div>
+      <textarea id="ians" placeholder="Type your answer here…"></textarea>
+      <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap">
+        <button class="btn btn-blue" onclick="getFeedback()">Get AI feedback</button>
+        <button class="btn btn-ghost" onclick="nextInterview()">Next question →</button>
+      </div>
+      <div class="feedback" id="fb"></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div><h4>Résumé Forge</h4><p>The AI career toolkit for resumes, cover letters, portfolios and interview prep. Built for job seekers who want an edge.</p></div>
+      <div><h4 style="font-size:1rem">Product</h4><a href="#features">Features</a><a href="#builder">Resume builder</a><a href="#interview">Interview prep</a></div>
+      <div><h4 style="font-size:1rem">Company</h4><a href="#">About</a><a href="#">Templates</a><a href="#">Contact</a></div>
+    </div>
+    <div class="foot-bottom">© 2026 Résumé Forge. A demo concept site. All content shown is sample data.</div>
+  </div>
+</footer>
+
+<script>
+function generateResume(){
+  const name = document.getElementById('bName').value || 'Your Name';
+  const role = document.getElementById('bRole').value || 'Professional';
+  const years = document.getElementById('bYears').value || '5';
+  const skills = document.getElementById('bSkills').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const ach = document.getElementById('bAch').value || 'Delivered measurable results';
+  const out = document.getElementById('out');
+  out.innerHTML = '<div class="line" style="width:40%"></div><div class="line" style="width:80%"></div>';
+  setTimeout(()=>{
+    out.innerHTML = `
+      <div class="gen-item"><div class="lbl">Professional summary</div><div class="txt">${role} with ${years}+ years of experience delivering high-impact work. Skilled in ${skills.slice(0,3).join(', ')} and known for turning ambiguous problems into shipped solutions.</div></div>
+      <div class="gen-item"><div class="lbl">Experience bullet</div><div class="txt">${ach} — quantified impact that demonstrates ownership and measurable results.</div></div>
+      <div class="gen-item"><div class="lbl">Skills line</div><div class="txt">${skills.join(' · ')}</div></div>
+      <div class="gen-item"><div class="lbl">ATS keywords matched</div><div class="txt">${skills.length} of ${skills.length} target keywords present. Strong match for ${role} roles.</div></div>
+      <div class="gen-item"><div class="lbl">Suggested headline</div><div class="txt">${role} · ${skills[0]||'Problem solver'} · Building products people love</div></div>`;
+  }, 700);
+}
+
+const questions = [
+  "Tell me about a time you solved a difficult problem at work.",
+  "Describe a situation where you had to work with a difficult teammate.",
+  "What's a project you're most proud of, and why?",
+  "Tell me about a time you failed and what you learned."
+];
+let iqi = 0;
+function nextInterview(){
+  iqi = (iqi+1) % questions.length;
+  document.getElementById('iq').textContent = questions[iqi];
+  document.getElementById('ians').value = '';
+  document.getElementById('fb').classList.remove('show');
+}
+function getFeedback(){
+  const ans = document.getElementById('ians').value.trim();
+  const fb = document.getElementById('fb');
+  if(ans.length < 20){
+    fb.innerHTML = '<b>Tip:</b> Your answer is quite short. Aim for 3–5 sentences using the STAR method (Situation, Task, Action, Result).';
+    fb.classList.add('show');
+    return;
+  }
+  const words = ans.split(/\s+/).length;
+  const hasNumbers = /\d/.test(ans);
+  const hasResult = /(result|impact|increased|reduced|improved|led|delivered|grew)/i.test(ans);
+  let score = 60;
+  if(words > 40) score += 15;
+  if(hasNumbers) score += 15;
+  if(hasResult) score += 10;
+  score = Math.min(score, 98);
+  fb.innerHTML = `
+    <b>AI feedback — estimated score ${score}/100</b>
+    <p style="margin-top:8px">${hasResult ? '✓ Strong: you described a clear outcome.' : '⚠ Add a concrete result — what changed because of your action?'}</p>
+    <p>${hasNumbers ? '✓ Great: you included measurable numbers.' : '⚠ Quantify the impact (%, time saved, revenue, users).'}</p>
+    <p>${words > 40 ? '✓ Good length and detail.' : '⚠ Expand a little — aim for 3–5 sentences.'}</p>
+    <div class="score-row">
+      <span class="score-chip">Structure: ${words>40?'Strong':'Fair'}</span>
+      <span class="score-chip">Impact: ${hasResult?'Strong':'Needs work'}</span>
+      <span class="score-chip">Metrics: ${hasNumbers?'Present':'Missing'}</span>
+    </div>`;
+  fb.classList.add('show');
+}
+
+const io = new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

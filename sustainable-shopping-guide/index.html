@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verdant — Sustainable Shopping Guide</title>
+<style>
+  :root{
+    --forest:#1b4332;
+    --forest-2:#2d6a4f;
+    --leaf:#52b788;
+    --sage:#d8f3dc;
+    --cream:#f7f6f1;
+    --ink:#14261c;
+    --line:rgba(20,38,28,.12);
+    --clay:#c77d4a;
+    --radius:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI",system-ui,-apple-system,sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;overflow-x:hidden}
+  h1,h2,h3{font-family:"Palatino Linotype","Book Antiqua",Georgia,serif;letter-spacing:-.01em}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+  a{color:inherit;text-decoration:none}
+
+  header.nav{position:sticky;top:0;z-index:60;background:rgba(247,246,241,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:70px;gap:20px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.2rem;font-family:"Palatino Linotype",serif}
+  .logo .mark{width:36px;height:36px;border-radius:50%;background:var(--forest);color:var(--leaf);display:grid;place-items:center;font-size:1.1rem}
+  .nav-links{display:flex;gap:24px;font-size:.92rem;font-weight:600}
+  .nav-links a{opacity:.72;transition:.2s}
+  .nav-links a:hover{opacity:1;color:var(--forest-2)}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:999px;font-weight:700;font-size:.9rem;border:none;cursor:pointer;transition:transform .18s,box-shadow .18s;font-family:inherit}
+  .btn-forest{background:var(--forest);color:#fff}
+  .btn-forest:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(27,67,50,.3)}
+  .btn-leaf{background:var(--leaf);color:var(--forest)}
+  .btn-leaf:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(82,183,136,.4)}
+  .btn-ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+  .btn-ghost:hover{background:rgba(20,38,28,.05)}
+
+  .hero{padding:70px 0 50px;position:relative;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:0;background:radial-gradient(600px 400px at 85% 5%,rgba(82,183,136,.22),transparent 65%),radial-gradient(500px 400px at 5% 95%,rgba(199,125,74,.12),transparent 70%);z-index:-1}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:50px;align-items:center}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:.78rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:22px;color:var(--forest-2)}
+  .hero h1{font-size:clamp(2.2rem,4.8vw,3.4rem);line-height:1.08;margin-bottom:18px}
+  .hero h1 span{color:var(--forest-2)}
+  .hero p{opacity:.78;font-size:1.08rem;max-width:520px;margin-bottom:28px}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:30px}
+  .hero-stats{display:flex;gap:30px;flex-wrap:wrap}
+  .hero-stats .s b{display:block;font-size:1.5rem;font-family:"Palatino Linotype",serif;color:var(--forest)}
+  .hero-stats .s span{font-size:.8rem;opacity:.65;font-weight:600}
+
+  .glass{background:rgba(255,255,255,.6);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.8);border-radius:var(--radius);box-shadow:0 20px 50px rgba(27,67,50,.1)}
+  .impact-card{padding:26px}
+  .impact-card h3{font-size:1.05rem;margin-bottom:16px}
+  .impact-row{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px dashed var(--line)}
+  .impact-row:last-child{border-bottom:none}
+  .impact-row .ic{width:40px;height:40px;border-radius:12px;background:var(--sage);display:grid;place-items:center;font-size:1.2rem;flex-shrink:0}
+  .impact-row .t{font-weight:700;font-size:.9rem}
+  .impact-row .m{font-size:.76rem;opacity:.6}
+  .impact-row .v{margin-left:auto;font-weight:800;color:var(--forest-2);font-size:.9rem}
+
+  section{padding:64px 0}
+  .sec-head{text-align:center;max-width:640px;margin:0 auto 42px}
+  .sec-head h2{font-size:clamp(1.8rem,3.6vw,2.4rem);margin-bottom:12px}
+  .sec-head p{opacity:.72}
+  .kicker{font-size:.76rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--forest-2);display:block;margin-bottom:10px}
+
+  /* COMPARE */
+  .compare{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .prod{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:transform .25s,box-shadow .25s;display:flex;flex-direction:column}
+  .prod:hover{transform:translateY(-6px);box-shadow:0 20px 44px rgba(27,67,50,.12)}
+  .prod .cover{height:130px;display:grid;place-items:center;font-size:3rem;position:relative}
+  .prod .body{padding:20px;flex:1;display:flex;flex-direction:column}
+  .prod .brand{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--forest-2);margin-bottom:6px}
+  .prod h3{font-size:1.05rem;margin-bottom:10px}
+  .eco-score{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .eco-ring{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:.8rem;font-weight:800;color:var(--forest);flex-shrink:0}
+  .eco-ring span{background:#fff;width:34px;height:34px;border-radius:50%;display:grid;place-items:center}
+  .eco-label{font-size:.78rem;font-weight:700}
+  .eco-label small{display:block;font-weight:600;opacity:.6;font-size:.72rem}
+  .metrics{display:grid;gap:8px;margin-bottom:16px;flex:1}
+  .metric{display:flex;justify-content:space-between;font-size:.82rem}
+  .metric span:first-child{opacity:.65}
+  .metric span:last-child{font-weight:700}
+  .prod .foot{display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid var(--line)}
+  .prod .price{font-weight:800;font-size:1.1rem;color:var(--forest)}
+  .badge{position:absolute;top:12px;right:12px;background:var(--leaf);color:var(--forest);font-size:.66rem;font-weight:800;padding:4px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:.05em}
+  .prod{position:relative}
+
+  /* FILTER */
+  .filters{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:34px}
+  .f{padding:9px 18px;border-radius:999px;background:#fff;border:1.5px solid var(--line);font-weight:700;font-size:.85rem;cursor:pointer;transition:.2s;font-family:inherit;color:var(--ink)}
+  .f.active{background:var(--forest);color:#fff;border-color:var(--forest)}
+  .f:hover:not(.active){border-color:var(--forest-2)}
+
+  /* IMPACT CALC */
+  .calc{display:grid;grid-template-columns:1fr 1fr;gap:34px;align-items:center;background:var(--forest);color:#fff;border-radius:28px;padding:44px;position:relative;overflow:hidden}
+  .calc::before{content:"";position:absolute;inset:0;background:radial-gradient(400px 300px at 90% 10%,rgba(82,183,136,.25),transparent 70%)}
+  .calc h2{font-size:clamp(1.6rem,3vw,2.2rem);margin-bottom:14px;position:relative}
+  .calc p{opacity:.8;margin-bottom:22px;position:relative}
+  .calc label{display:block;font-size:.82rem;font-weight:700;margin:14px 0 6px;position:relative}
+  .calc input[type=range]{width:100%;position:relative;accent-color:var(--leaf)}
+  .calc .val{font-weight:800;color:var(--leaf);position:relative}
+  .calc-out{position:relative;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:28px;text-align:center}
+  .calc-out .big{font-size:2.6rem;font-weight:800;color:var(--leaf);font-family:"Palatino Linotype",serif}
+  .calc-out .lbl{font-size:.85rem;opacity:.75;margin-bottom:18px}
+  .calc-out .row{display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid rgba(255,255,255,.12);font-size:.88rem}
+
+  /* TIPS */
+  .tips{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .tip{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:26px}
+  .tip .ic{width:46px;height:46px;border-radius:13px;background:var(--sage);display:grid;place-items:center;font-size:1.3rem;margin-bottom:14px}
+  .tip h3{font-size:1.08rem;margin-bottom:8px}
+  .tip p{font-size:.9rem;opacity:.72}
+
+  footer{background:var(--forest);color:#fff;padding:50px 0 30px;margin-top:30px}
+  .foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;margin-bottom:34px}
+  footer h4{font-size:1.15rem;margin-bottom:12px;font-family:"Palatino Linotype",serif}
+  footer p,footer a{opacity:.62;font-size:.88rem}
+  footer a{display:block;margin-bottom:8px;transition:.2s}
+  footer a:hover{opacity:1}
+  .foot-bottom{border-top:1px solid rgba(255,255,255,.12);padding-top:22px;font-size:.8rem;opacity:.5;text-align:center}
+
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s}
+  .reveal.in{opacity:1;transform:none}
+
+  @media(max-width:960px){
+    .hero-grid,.compare,.calc,.tips{grid-template-columns:1fr}
+    .nav-links{display:none}
+    .foot-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="logo"><span class="mark">❧</span> Verdant</div>
+    <nav class="nav-links">
+      <a href="#compare">Compare</a>
+      <a href="#impact">Impact calculator</a>
+      <a href="#tips">Guides</a>
+    </nav>
+    <button class="btn btn-forest" onclick="document.getElementById('compare').scrollIntoView()">Start comparing</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="pill">✦ Independent · Evidence-based</span>
+      <h1>Shop greener with <span>real data</span>, not greenwashing.</h1>
+      <p>Compare eco-friendly products, brands and prices side by side — with transparent environmental impact scores you can actually trust.</p>
+      <div class="hero-cta">
+        <button class="btn btn-leaf" onclick="document.getElementById('compare').scrollIntoView()">Compare products →</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('impact').scrollIntoView()">Calculate my impact</button>
+      </div>
+      <div class="hero-stats">
+        <div class="s"><b>2,400+</b><span>Products rated</span></div>
+        <div class="s"><b>180</b><span>Brands audited</span></div>
+        <div class="s"><b>0</b><span>Sponsored rankings</span></div>
+      </div>
+    </div>
+    <div class="glass impact-card">
+      <h3>Your impact this month</h3>
+      <div class="impact-row"><div class="ic">🌱</div><div><div class="t">Carbon saved</div><div class="m">vs. conventional choices</div></div><div class="v">42 kg</div></div>
+      <div class="impact-row"><div class="ic">💧</div><div><div class="t">Water saved</div><div class="m">across 6 purchases</div></div><div class="v">1,180 L</div></div>
+      <div class="impact-row"><div class="ic">♻️</div><div><div class="t">Plastic avoided</div><div class="m">packaging + products</div></div><div class="v">3.2 kg</div></div>
+      <div class="impact-row"><div class="ic">🌳</div><div><div class="t">Trees equivalent</div><div class="m">annual absorption</div></div><div class="v">2.1</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="compare">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">Side-by-side</span>
+      <h2>Compare eco-friendly products</h2>
+      <p>Every score is built from materials, supply chain, packaging and end-of-life data.</p>
+    </div>
+    <div class="filters" id="filters">
+      <button class="f active" data-cat="all" onclick="setFilter(this)">All categories</button>
+      <button class="f" data-cat="Home" onclick="setFilter(this)">Home</button>
+      <button class="f" data-cat="Fashion" onclick="setFilter(this)">Fashion</button>
+      <button class="f" data-cat="Beauty" onclick="setFilter(this)">Beauty</button>
+      <button class="f" data-cat="Kitchen" onclick="setFilter(this)">Kitchen</button>
+    </div>
+    <div class="compare" id="grid"></div>
+  </div>
+</section>
+
+<section id="impact" style="background:linear-gradient(180deg,transparent,rgba(216,243,220,.6),transparent)">
+  <div class="wrap">
+    <div class="calc reveal">
+      <div>
+        <span class="kicker" style="color:var(--leaf)">Impact calculator</span>
+        <h2>See what switching could save</h2>
+        <p>Adjust the sliders to estimate the yearly impact of swapping conventional products for greener alternatives.</p>
+        <label>Products switched per month: <span class="val" id="vProducts">4</span></label>
+        <input type="range" id="rProducts" min="1" max="20" value="4" oninput="calcImpact()">
+        <label>Household size: <span class="val" id="vHouse">2</span></label>
+        <input type="range" id="rHouse" min="1" max="8" value="2" oninput="calcImpact()">
+        <label>Commitment level: <span class="val" id="vCommit">Medium</span></label>
+        <input type="range" id="rCommit" min="1" max="3" value="2" oninput="calcImpact()">
+      </div>
+      <div class="calc-out">
+        <div class="lbl">Estimated yearly savings</div>
+        <div class="big" id="cCarbon">0 kg</div>
+        <div class="lbl">CO₂ avoided per year</div>
+        <div class="row"><span>Water saved</span><span id="cWater">0 L</span></div>
+        <div class="row"><span>Plastic avoided</span><span id="cPlastic">0 kg</span></div>
+        <div class="row"><span>Money saved</span><span id="cMoney">$0</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tips">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">Guides</span>
+      <h2>Shop smarter, not just greener</h2>
+    </div>
+    <div class="tips">
+      <div class="tip reveal"><div class="ic">🔍</div><h3>Spot greenwashing</h3><p>Vague claims like "eco-friendly" mean little. Look for certifications, specific numbers and third-party audits.</p></div>
+      <div class="tip reveal"><div class="ic">📦</div><h3>Packaging matters</h3><p>A great product in plastic wrap loses points. Prioritise refillable, compostable or plastic-free packaging.</p></div>
+      <div class="tip reveal"><div class="ic">⏳</div><h3>Buy for longevity</h3><p>The greenest product is the one you keep for years. Durability and repairability beat a low price every time.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div><h4>Verdant</h4><p>An independent guide to sustainable shopping. We rate products on evidence, never on sponsorship.</p></div>
+      <div><h4 style="font-size:1rem">Explore</h4><a href="#compare">Compare products</a><a href="#impact">Impact calculator</a><a href="#tips">Guides</a></div>
+      <div><h4 style="font-size:1rem">About</h4><a href="#">Our methodology</a><a href="#">Certifications</a><a href="#">Contact</a></div>
+    </div>
+    <div class="foot-bottom">© 2026 Verdant. A demo concept site. All products, brands and scores are sample content.</div>
+  </div>
+</footer>
+
+<script>
+const products = [
+  {name:"Bamboo Toothbrush Set",brand:"GreenRoot",cat:"Beauty",icon:"🦥",bg:"rgba(82,183,136,.18)",score:92,price:12,carbon:"0.4 kg",water:"2 L",pack:"Plastic-free",badge:"Editor's pick"},
+  {name:"Organic Cotton Tee",brand:"FairThread",cat:"Fashion",icon:"👕",bg:"rgba(199,125,74,.18)",score:84,price:34,carbon:"3.1 kg",water:"270 L",pack:"Recycled paper"},
+  {name:"Reusable Beeswax Wraps",brand:"HiveWrap",cat:"Kitchen",icon:"🍯",bg:"rgba(240,180,41,.2)",score:95,price:18,carbon:"0.2 kg",water:"1 L",pack:"Compostable",badge:"Best value"},
+  {name:"Refillable Shampoo Bar",brand:"PureLather",cat:"Beauty",icon:"🧼",bg:"rgba(82,183,136,.18)",score:89,price:9,carbon:"0.3 kg",water:"5 L",pack:"Plastic-free"},
+  {name:"Recycled Glass Water Bottle",brand:"ClearLoop",cat:"Home",icon:"🍶",bg:"rgba(47,111,237,.14)",score:88,price:22,carbon:"1.2 kg",water:"12 L",pack:"Recycled card"},
+  {name:"Hemp Canvas Tote",brand:"EarthCarry",cat:"Fashion",icon:"👜",bg:"rgba(199,125,74,.18)",score:86,price:26,carbon:"1.8 kg",water:"90 L",pack:"Plastic-free"},
+  {name:"Compostable Cleaning Tablets",brand:"FreshDrop",cat:"Home",icon:"💧",bg:"rgba(47,111,237,.14)",score:94,price:15,carbon:"0.1 kg",water:"3 L",pack:"Compostable",badge:"Low waste"},
+  {name:"Solar Power Bank",brand:"SunCell",cat:"Home",icon:"🔋",bg:"rgba(240,180,41,.2)",score:81,price:45,carbon:"6.4 kg",water:"40 L",pack:"Recycled box"},
+  {name:"Bamboo Kitchen Utensils",brand:"GreenRoot",cat:"Kitchen",icon:"🥄",bg:"rgba(82,183,136,.18)",score:91,price:19,carbon:"0.5 kg",water:"4 L",pack:"Plastic-free"}
+];
+
+let activeCat = 'all';
+function scoreColor(s){ return s>=90 ? '#52b788' : s>=80 ? '#95d5b2' : '#f0b429'; }
+function renderProducts(){
+  const grid = document.getElementById('grid');
+  const list = products.filter(p=>activeCat==='all'||p.cat===activeCat);
+  grid.innerHTML = '';
+  list.forEach(p=>{
+    const el = document.createElement('div');
+    el.className = 'prod reveal in';
+    el.innerHTML = `
+      ${p.badge?`<span class="badge">${p.badge}</span>`:''}
+      <div class="cover" style="background:${p.bg}">${p.icon}</div>
+      <div class="body">
+        <div class="brand">${p.brand} · ${p.cat}</div>
+        <h3>${p.name}</h3>
+        <div class="eco-score">
+          <div class="eco-ring" style="background:conic-gradient(${scoreColor(p.score)} ${p.score*3.6}deg, rgba(20,38,28,.08) 0deg)"><span>${p.score}</span></div>
+          <div class="eco-label">Eco score<small>${p.score>=90?'Excellent':p.score>=80?'Good':'Fair'}</small></div>
+        </div>
+        <div class="metrics">
+          <div class="metric"><span>Carbon footprint</span><span>${p.carbon}</span></div>
+          <div class="metric"><span>Water use</span><span>${p.water}</span></div>
+          <div class="metric"><span>Packaging</span><span>${p.pack}</span></div>
+        </div>
+        <div class="foot">
+          <div class="price">$${p.price}</div>
+          <button class="btn btn-forest" onclick="alert('${p.name} added to your comparison list (demo).')">Compare</button>
+        </div>
+      </div>`;
+    grid.appendChild(el);
+  });
+}
+function setFilter(el){
+  document.querySelectorAll('.f').forEach(f=>f.classList.remove('active'));
+  el.classList.add('active');
+  activeCat = el.dataset.cat;
+  renderProducts();
+}
+
+function calcImpact(){
+  const products = +document.getElementById('rProducts').value;
+  const house = +document.getElementById('rHouse').value;
+  const commit = +document.getElementById('rCommit').value;
+  const commitLabel = commit===1?'Light':commit===2?'Medium':'Committed';
+  document.getElementById('vProducts').textContent = products;
+  document.getElementById('vHouse').textContent = house;
+  document.getElementById('vCommit').textContent = commitLabel;
+  const factor = commit===1?0.6:commit===2?1:1.5;
+  const carbon = Math.round(products*12*1.8*factor*house*0.6);
+  const water = Math.round(products*12*45*factor*house*0.5);
+  const plastic = (products*12*0.12*factor*house).toFixed(1);
+  const money = Math.round(products*12*4.5*factor);
+  document.getElementById('cCarbon').textContent = carbon.toLocaleString()+' kg';
+  document.getElementById('cWater').textContent = water.toLocaleString()+' L';
+  document.getElementById('cPlastic').textContent = plastic+' kg';
+  document.getElementById('cMoney').textContent = '$'+money.toLocaleString();
+}
+
+renderProducts();
+calcImpact();
+const io = new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
