@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>13 Trending Website Ideas — Live Demos</title>
+<style>
+  :root{
+    --bg:#0a0a0f;
+    --panel:#14141d;
+    --line:rgba(255,255,255,.09);
+    --text:#f4f4f7;
+    --muted:rgba(244,244,247,.55);
+    --lime:#c6f24e;
+    --radius:20px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+  h1,h2,h3{letter-spacing:-.03em;font-weight:800}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 22px}
+  a{color:inherit;text-decoration:none}
+
+  header{padding:70px 0 40px;position:relative;overflow:hidden}
+  header::before{content:"";position:absolute;inset:0;background:radial-gradient(700px 400px at 80% 0%,rgba(198,242,78,.14),transparent 65%),radial-gradient(500px 400px at 5% 100%,rgba(78,224,242,.1),transparent 70%);z-index:-1}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:.76rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:22px;color:var(--lime)}
+  header h1{font-size:clamp(2.2rem,5vw,3.6rem);line-height:1.05;margin-bottom:16px;max-width:820px}
+  header h1 span{color:var(--lime)}
+  header p{color:var(--muted);font-size:1.08rem;max-width:620px;margin-bottom:26px}
+  .stats{display:flex;gap:34px;flex-wrap:wrap}
+  .stats .s b{display:block;font-size:1.6rem;color:var(--lime)}
+  .stats .s span{font-size:.8rem;color:var(--muted);font-weight:600}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;padding:20px 0 70px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s;display:flex;flex-direction:column}
+  .card:hover{transform:translateY(-6px);border-color:rgba(198,242,78,.4);box-shadow:0 24px 50px rgba(0,0,0,.5)}
+  .card .cover{height:120px;display:grid;place-items:center;font-size:2.8rem;position:relative}
+  .card .num{position:absolute;top:12px;left:12px;background:rgba(0,0,0,.4);backdrop-filter:blur(8px);border-radius:999px;padding:4px 12px;font-size:.72rem;font-weight:800;color:#fff}
+  .card .body{padding:20px;flex:1;display:flex;flex-direction:column}
+  .card h3{font-size:1.08rem;margin-bottom:8px}
+  .card p{font-size:.85rem;color:var(--muted);margin-bottom:16px;flex:1}
+  .card .tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+  .card .tags span{font-size:.68rem;font-weight:700;background:rgba(255,255,255,.06);border:1px solid var(--line);padding:3px 9px;border-radius:999px;color:var(--muted)}
+  .card .go{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:.88rem;color:var(--lime);transition:gap .2s}
+  .card:hover .go{gap:14px}
+
+  footer{border-top:1px solid var(--line);padding:34px 0;text-align:center;color:var(--muted);font-size:.85rem}
+
+  @media(max-width:960px){ .grid{grid-template-columns:1fr 1fr} }
+  @media(max-width:620px){ .grid{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <span class="pill">✦ 13 live demo websites</span>
+    <h1>13 trending website ideas, <span>built and live</span>.</h1>
+    <p>Each one is a complete, responsive, fully interactive site with modern design — AI touches, micro-animations, frosted glass and mobile-first layouts. Click any card to open it.</p>
+    <div class="stats">
+      <div class="s"><b>13</b><span>Live websites</span></div>
+      <div class="s"><b>100%</b><span>Responsive</span></div>
+      <div class="s"><b>0</b><span>Dependencies</span></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="grid" id="grid"></div>
+</main>
+
+<footer>© 2026 — 13 trending website concepts. All content is sample/demo data.</footer>
+
+<script>
+const sites = [
+  {n:1,title:"AI Study Planner",dir:"ai-study-planner",icon:"📚",bg:"linear-gradient(160deg,#1b2a41,#0d1b2a)",desc:"Personalized schedules, auto flashcards, adaptive quizzes and progress tracking.",tags:["AI","Education","Productivity"]},
+  {n:2,title:"Local Services Marketplace",dir:"local-services-marketplace",icon:"📍",bg:"linear-gradient(160deg,#1a7f4b,#0f5132)",desc:"Connect with tutors, designers, repair workers, photographers and freelancers nearby.",tags:["Marketplace","Local","Booking"]},
+  {n:3,title:"Digital Product Store",dir:"digital-product-store",icon:"◆",bg:"linear-gradient(160deg,#7c5cff,#ff5c8a)",desc:"Sell templates, prompts, Notion dashboards, resume designs and study notes.",tags:["E-commerce","Digital","Store"]},
+  {n:4,title:"AI Resume & Portfolio Builder",dir:"ai-resume-builder",icon:"📄",bg:"linear-gradient(160deg,#2f6fed,#0a2540)",desc:"Generate resumes, cover letters, personal websites and practice interviews.",tags:["AI","Career","Builder"]},
+  {n:5,title:"Sustainable Shopping Guide",dir:"sustainable-shopping-guide",icon:"🌿",bg:"linear-gradient(160deg,#52b788,#1b4332)",desc:"Compare eco-friendly products, brands, prices and environmental impact.",tags:["Sustainability","Compare","Guide"]},
+  {n:6,title:"Creator Collaboration Platform",dir:"creator-collab-platform",icon:"✦",bg:"linear-gradient(160deg,#8b5cf6,#ec4899)",desc:"Help influencers, editors, designers and musicians find project partners.",tags:["Creators","Matching","Community"]},
+  {n:7,title:"Personal Finance Dashboard",dir:"personal-finance-dashboard",icon:"$",bg:"linear-gradient(160deg,#10b981,#0f1b2d)",desc:"Track expenses, subscriptions, savings goals and budgets in one clear view.",tags:["Finance","Dashboard","Tracking"]},
+  {n:8,title:"Virtual Try-On Store",dir:"virtual-tryon-store",icon:"◐",bg:"linear-gradient(160deg,#e05780,#5b2a4e)",desc:"Preview clothes, glasses, hairstyles and room décor with interactive visuals.",tags:["Retail","Try-on","Interactive"]},
+  {n:9,title:"Mental Wellness Companion",dir:"mental-wellness-companion",icon:"◍",bg:"linear-gradient(160deg,#2a9d8f,#a8dadc)",desc:"Mood tracking, journaling prompts, breathing exercises and habit building.",tags:["Wellness","Journal","Habits"]},
+  {n:10,title:"Interactive Portfolio Website",dir:"interactive-portfolio",icon:"N",bg:"linear-gradient(160deg,#c6f24e,#4ee0f2)",desc:"3D elements, animations, project case studies and a conversational AI assistant.",tags:["Portfolio","3D","AI Chat"]},
+  {n:11,title:"Event Discovery Website",dir:"event-discovery",icon:"◈",bg:"linear-gradient(160deg,#ff5a5f,#ffb400)",desc:"Find workshops, college events, concerts and meetups happening nearby.",tags:["Events","Discovery","Local"]},
+  {n:12,title:"Skill-Swap Community",dir:"skill-swap-community",icon:"⇄",bg:"linear-gradient(160deg,#16a34a,#bbf7d0)",desc:"Users exchange skills — like coding lessons for design help. No money needed.",tags:["Community","Skills","Matching"]},
+  {n:13,title:"Travel Itinerary Generator",dir:"travel-itinerary-generator",icon:"✈",bg:"linear-gradient(160deg,#0ea5e9,#f97316)",desc:"Personalized trips based on budget, interests, time and starting location.",tags:["Travel","AI","Planner"]}
+];
+document.getElementById('grid').innerHTML = sites.map(s=>`
+  <a class="card" href="${s.dir}/index.html">
+    <div class="cover" style="background:${s.bg}">${s.icon}<span class="num">#${s.n}</span></div>
+    <div class="body">
+      <h3>${s.title}</h3>
+      <p>${s.desc}</p>
+      <div class="tags">${s.tags.map(t=>`<span>${t}</span>`).join('')}</div>
+      <span class="go">Open site →</span>
+    </div>
+  </a>`).join('');
+</script>
+</body>
+</html>
