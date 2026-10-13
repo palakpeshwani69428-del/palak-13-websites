@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Collabry — Creator Collaboration Platform</title>
+<style>
+  :root{
+    --bg:#0e0a1a;
+    --panel:#181228;
+    --panel-2:#221a38;
+    --line:rgba(255,255,255,.09);
+    --text:#f4f1fb;
+    --muted:rgba(244,241,251,.6);
+    --violet:#8b5cf6;
+    --pink:#ec4899;
+    --amber:#fbbf24;
+    --radius:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+  h1,h2,h3{font-family:"Segoe UI",system-ui,sans-serif;letter-spacing:-.03em;font-weight:800}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 22px}
+  a{color:inherit;text-decoration:none}
+
+  header.nav{position:sticky;top:0;z-index:60;background:rgba(14,10,26,.78);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:70px;gap:20px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.2rem}
+  .logo .mark{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,var(--violet),var(--pink));display:grid;place-items:center;font-size:1.1rem}
+  .nav-links{display:flex;gap:24px;font-size:.92rem;font-weight:600}
+  .nav-links a{color:var(--muted);transition:.2s}
+  .nav-links a:hover{color:var(--text)}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:12px;font-weight:700;font-size:.9rem;border:none;cursor:pointer;transition:transform .18s,box-shadow .18s;font-family:inherit}
+  .btn-grad{background:linear-gradient(135deg,var(--violet),var(--pink));color:#fff}
+  .btn-grad:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(139,92,246,.4)}
+  .btn-ghost{background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--text)}
+  .btn-ghost:hover{background:rgba(255,255,255,.12)}
+
+  .hero{padding:70px 0 50px;position:relative;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:0;background:radial-gradient(600px 400px at 80% 0%,rgba(139,92,246,.3),transparent 65%),radial-gradient(500px 400px at 5% 95%,rgba(236,72,153,.2),transparent 70%);z-index:-1}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:50px;align-items:center}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:.78rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:22px;color:var(--amber)}
+  .hero h1{font-size:clamp(2.2rem,4.8vw,3.5rem);line-height:1.05;margin-bottom:18px}
+  .hero h1 span{background:linear-gradient(135deg,var(--violet),var(--pink));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .hero p{color:var(--muted);font-size:1.08rem;max-width:520px;margin-bottom:28px}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:30px}
+  .hero-stats{display:flex;gap:30px;flex-wrap:wrap}
+  .hero-stats .s b{display:block;font-size:1.5rem}
+  .hero-stats .s span{font-size:.8rem;color:var(--muted);font-weight:600}
+
+  .glass{background:rgba(255,255,255,.05);backdrop-filter:blur(18px);border:1px solid var(--line);border-radius:var(--radius)}
+  .match-card{padding:24px}
+  .match-card h3{font-size:1.05rem;margin-bottom:16px}
+  .match{display:flex;gap:14px;align-items:center;padding:12px;border-radius:14px;background:rgba(255,255,255,.04);margin-bottom:10px;transition:transform .2s}
+  .match:hover{transform:translateX(4px)}
+  .match .av{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-weight:800;font-size:.9rem;color:#fff;flex-shrink:0}
+  .match .t{font-weight:700;font-size:.9rem}
+  .match .m{font-size:.76rem;color:var(--muted)}
+  .match .pct{margin-left:auto;font-weight:800;color:var(--amber);font-size:.9rem}
+
+  section{padding:64px 0}
+  .sec-head{text-align:center;max-width:640px;margin:0 auto 42px}
+  .sec-head h2{font-size:clamp(1.8rem,3.6vw,2.5rem);margin-bottom:12px}
+  .sec-head p{color:var(--muted)}
+  .kicker{font-size:.76rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--pink);display:block;margin-bottom:10px}
+
+  /* ROLES */
+  .roles{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .role{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;text-align:center;transition:transform .25s,border-color .25s}
+  .role:hover{transform:translateY(-6px);border-color:var(--violet)}
+  .role .ic{font-size:2rem;margin-bottom:12px}
+  .role h3{font-size:1rem;margin-bottom:6px}
+  .role p{font-size:.82rem;color:var(--muted)}
+
+  /* CREATOR GRID */
+  .filters{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:34px}
+  .f{padding:9px 18px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid var(--line);font-weight:700;font-size:.85rem;cursor:pointer;transition:.2s;font-family:inherit;color:var(--text)}
+  .f.active{background:linear-gradient(135deg,var(--violet),var(--pink));border-color:transparent}
+  .f:hover:not(.active){border-color:var(--violet)}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px;transition:transform .25s,box-shadow .25s,border-color .25s;display:flex;flex-direction:column}
+  .card:hover{transform:translateY(-6px);box-shadow:0 24px 50px rgba(0,0,0,.5);border-color:rgba(139,92,246,.5)}
+  .card .head{display:flex;gap:14px;align-items:center;margin-bottom:14px}
+  .card .av{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-weight:800;font-size:1.05rem;color:#fff;flex-shrink:0}
+  .card .name{font-weight:800;font-size:1rem}
+  .card .role{font-size:.8rem;color:var(--muted)}
+  .card .bio{font-size:.86rem;color:var(--muted);margin-bottom:14px;flex:1}
+  .card .skills{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+  .card .skills span{font-size:.72rem;font-weight:700;background:rgba(139,92,246,.18);color:#c4b5fd;padding:4px 10px;border-radius:999px}
+  .card .foot{display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid var(--line)}
+  .card .stat{font-size:.78rem;color:var(--muted);font-weight:600}
+  .card .stat b{color:var(--text)}
+  .connect{background:rgba(255,255,255,.08);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:8px 14px;font-weight:700;font-size:.82rem;cursor:pointer;transition:.2s;font-family:inherit}
+  .connect:hover{background:linear-gradient(135deg,var(--violet),var(--pink));border-color:transparent}
+  .connect.sent{background:var(--amber);color:#2a1a00;border-color:transparent}
+
+  /* PROJECTS */
+  .projects{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .proj{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:transform .25s}
+  .proj:hover{transform:translateY(-6px)}
+  .proj .cover{height:120px;display:grid;place-items:center;font-size:2.6rem}
+  .proj .body{padding:20px}
+  .proj .type{font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);margin-bottom:8px}
+  .proj h3{font-size:1.02rem;margin-bottom:8px}
+  .proj p{font-size:.85rem;color:var(--muted);margin-bottom:14px}
+  .proj .meta{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);font-weight:600}
+  .proj .meta b{color:var(--text)}
+
+  /* CTA */
+  .cta{background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(236,72,153,.15));border:1px solid var(--line);border-radius:28px;padding:52px;text-align:center}
+  .cta h2{font-size:clamp(1.7rem,3.4vw,2.4rem);margin-bottom:14px}
+  .cta p{color:var(--muted);max-width:520px;margin:0 auto 26px}
+
+  footer{background:var(--panel);border-top:1px solid var(--line);padding:50px 0 30px;margin-top:30px}
+  .foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;margin-bottom:34px}
+  footer h4{font-size:1.1rem;margin-bottom:12px}
+  footer p,footer a{color:var(--muted);font-size:.88rem}
+  footer a{display:block;margin-bottom:8px;transition:.2s}
+  footer a:hover{color:var(--text)}
+  .foot-bottom{border-top:1px solid var(--line);padding-top:22px;font-size:.8rem;color:var(--muted);text-align:center}
+
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s}
+  .reveal.in{opacity:1;transform:none}
+
+  @media(max-width:960px){
+    .hero-grid,.grid,.projects,.roles{grid-template-columns:1fr 1fr}
+    .nav-links{display:none}
+    .foot-grid{grid-template-columns:1fr}
+  }
+  @media(max-width:620px){ .grid,.projects,.roles{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="logo"><span class="mark">✦</span> Collabry</div>
+    <nav class="nav-links">
+      <a href="#creators">Creators</a>
+      <a href="#projects">Projects</a>
+      <a href="#join">Join</a>
+    </nav>
+    <button class="btn btn-grad" onclick="document.getElementById('join').scrollIntoView()">Create profile</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="pill">✦ 24,000+ creators</span>
+      <h1>Find your next <span>creative partner</span>.</h1>
+      <p>Collabry matches influencers, editors, designers and musicians with the collaborators who fit their style, schedule and goals — not just their follower count.</p>
+      <div class="hero-cta">
+        <button class="btn btn-grad" onclick="document.getElementById('creators').scrollIntoView()">Browse creators →</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('projects')">See open projects</button>
+      </div>
+      <div class="hero-stats">
+        <div class="s"><b>24k+</b><span>Active creators</span></div>
+        <div class="s"><b>6,800</b><span>Collabs started</span></div>
+        <div class="s"><b>4.9★</b><span>Partner rating</span></div>
+      </div>
+    </div>
+    <div class="glass match-card">
+      <h3>🎯 Your top AI matches today</h3>
+      <div class="match"><div class="av" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">MK</div><div><div class="t">Maya K.</div><div class="m">Video editor · Short-form</div></div><div class="pct">96%</div></div>
+      <div class="match"><div class="av" style="background:linear-gradient(135deg,#fbbf24,#ec4899)">JT</div><div><div class="t">Jonah T.</div><div class="m">Music producer · Lo-fi</div></div><div class="pct">91%</div></div>
+      <div class="match"><div class="av" style="background:linear-gradient(135deg,#8b5cf6,#3ddad7)">RS</div><div><div class="t">Riya S.</div><div class="m">Motion designer · 3D</div></div><div class="pct">88%</div></div>
+      <div class="match"><div class="av" style="background:linear-gradient(135deg,#ec4899,#fbbf24)">DL</div><div><div class="t">Diego L.</div><div class="m">Photographer · Product</div></div><div class="pct">84%</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">Every discipline</span>
+      <h2>Collaborate across creative fields</h2>
+    </div>
+    <div class="roles">
+      <div class="role reveal"><div class="ic">🎬</div><h3>Influencers</h3><p>Find editors, thumbnail artists and brand partners.</p></div>
+      <div class="role reveal"><div class="ic">✂️</div><h3>Editors</h3><p>Get matched with channels that need your style.</p></div>
+      <div class="role reveal"><div class="ic">🎨</div><h3>Designers</h3><p>Team up on branding, motion and product work.</p></div>
+      <div class="role reveal"><div class="ic">🎵</div><h3>Musicians</h3><p>Find producers, vocalists and session players.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="creators" style="background:linear-gradient(180deg,transparent,rgba(139,92,246,.08),transparent)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">Discover</span>
+      <h2>Creators open to collab</h2>
+      <p>Filter by discipline and send a connection request in one click.</p>
+    </div>
+    <div class="filters" id="filters">
+      <button class="f active" data-cat="all" onclick="setFilter(this)">All</button>
+      <button class="f" data-cat="Influencer" onclick="setFilter(this)">Influencers</button>
+      <button class="f" data-cat="Editor" onclick="setFilter(this)">Editors</button>
+      <button class="f" data-cat="Designer" onclick="setFilter(this)">Designers</button>
+      <button class="f" data-cat="Musician" onclick="setFilter(this)">Musicians</button>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">Open calls</span>
+      <h2>Projects looking for partners</h2>
+    </div>
+    <div class="projects">
+      <div class="proj reveal"><div class="cover" style="background:rgba(139,92,246,.2)">🎥</div><div class="body"><div class="type">Video series</div><h3>Documentary on street food</h3><p>Seeking a cinematographer and colourist for a 4-part YouTube series.</p><div class="meta"><span>Budget <b>$2,400</b></span><span>3 spots</span></div></div></div>
+      <div class="proj reveal"><div class="cover" style="background:rgba(236,72,153,.2)">🎧</div><div class="body"><div class="type">Music</div><h3>Lo-fi album collaboration</h3><p>Producer looking for a vocalist and cover artist for a 8-track release.</p><div class="meta"><span>Revenue <b>Split 50/50</b></span><span>2 spots</span></div></div></div>
+      <div class="proj reveal"><div class="cover" style="background:rgba(251,191,36,.2)">🖌️</div><div class="body"><div class="type">Branding</div><h3>Startup rebrand sprint</h3><p>Designer + copywriter needed for a 2-week identity refresh.</p><div class="meta"><span>Budget <b>$1,800</b></span><span>2 spots</span></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="join">
+  <div class="wrap">
+    <div class="cta reveal">
+      <h2>Your next big collab starts here</h2>
+      <p>Create a free profile, get AI-matched with creators who fit your style, and start building together.</p>
+      <button class="btn btn-grad" onclick="alert('Profile creation is a demo action.')">Create your profile →</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div><h4>Collabry</h4><p>The collaboration platform for creators. Match on style, schedule and goals — not just follower counts.</p></div>
+      <div><h4 style="font-size:1rem">Explore</h4><a href="#creators">Creators</a><a href="#projects">Projects</a><a href="#join">Join</a></div>
+      <div><h4 style="font-size:1rem">Company</h4><a href="#">About</a><a href="#">Pricing</a><a href="#">Contact</a></div>
+    </div>
+    <div class="foot-bottom">© 2026 Collabry. A demo concept site. All creators and projects are sample content.</div>
+  </div>
+</footer>
+
+<script>
+const creators = [
+  {name:"Maya Kim",role:"Video Editor",cat:"Editor",bio:"Short-form editor for lifestyle and travel channels. 40M+ views edited.",skills:["Premiere","After Effects","Shorts"],followers:"128k",rating:4.9,color:"linear-gradient(135deg,#8b5cf6,#ec4899)"},
+  {name:"Jonah Torres",role:"Music Producer",cat:"Musician",bio:"Lo-fi and ambient producer. I score videos and build custom sound packs.",skills:["Ableton","Mixing","Sound design"],followers:"64k",rating:4.8,color:"linear-gradient(135deg,#fbbf24,#ec4899)"},
+  {name:"Riya Sharma",role:"Motion Designer",cat:"Designer",bio:"3D motion and title sequences for creators and small studios.",skills:["Blender","Cinema 4D","Motion"],followers:"92k",rating:5.0,color:"linear-gradient(135deg,#8b5cf6,#3ddad7)"},
+  {name:"Diego Lopez",role:"Product Photographer",cat:"Designer",bio:"Clean product and lifestyle photography for e-commerce brands.",skills:["Lightroom","Studio","Retouch"],followers:"41k",rating:4.7,color:"linear-gradient(135deg,#ec4899,#fbbf24)"},
+  {name:"Amara Osei",role:"Lifestyle Influencer",cat:"Influencer",bio:"1.2M across TikTok and Instagram. I love brand storytelling collabs.",skills:["TikTok","Reels","UGC"],followers:"1.2M",rating:4.9,color:"linear-gradient(135deg,#3ddad7,#8b5cf6)"},
+  {name:"Leo Novak",role:"Thumbnail Designer",cat:"Designer",bio:"I design click-worthy thumbnails for tech and gaming channels.",skills:["Photoshop","Figma","CTR"],followers:"77k",rating:4.8,color:"linear-gradient(135deg,#fbbf24,#8b5cf6)"},
+  {name:"Sana Iqbal",role:"Podcast Editor",cat:"Editor",bio:"Audio editing, mastering and show notes for interview podcasts.",skills:["Audition","Mastering","Show notes"],followers:"33k",rating:4.9,color:"linear-gradient(135deg,#ec4899,#3ddad7)"},
+  {name:"Kai Nakamura",role:"Session Guitarist",cat:"Musician",bio:"Remote guitar and bass tracks for producers and singer-songwriters.",skills:["Guitar","Bass","Remote"],followers:"28k",rating:4.8,color:"linear-gradient(135deg,#8b5cf6,#fbbf24)"},
+  {name:"Zoe Bennett",role:"Travel Influencer",cat:"Influencer",bio:"Slow-travel storytelling with a loyal 480k community.",skills:["YouTube","Blog","Brand deals"],followers:"480k",rating:4.7,color:"linear-gradient(135deg,#3ddad7,#ec4899)"}
+];
+
+let activeCat = 'all';
+function initials(n){ return n.split(' ').map(w=>w[0]).join('').slice(0,2); }
+function renderCreators(){
+  const grid = document.getElementById('grid');
+  const list = creators.filter(c=>activeCat==='all'||c.cat===activeCat);
+  grid.innerHTML = '';
+  list.forEach(c=>{
+    const el = document.createElement('div');
+    el.className = 'card reveal in';
+    el.innerHTML = `
+      <div class="head">
+        <div class="av" style="background:${c.color}">${initials(c.name)}</div>
+        <div><div class="name">${c.name}</div><div class="role">${c.role}</div></div>
+      </div>
+      <p class="bio">${c.bio}</p>
+      <div class="skills">${c.skills.map(s=>`<span>${s}</span>`).join('')}</div>
+      <div class="foot">
+        <div class="stat"><b>${c.followers}</b> · ★ ${c.rating}</div>
+        <button class="connect" onclick="connect(this)">Connect</button>
+      </div>`;
+    grid.appendChild(el);
+  });
+}
+function setFilter(el){
+  document.querySelectorAll('.f').forEach(f=>f.classList.remove('active'));
+  el.classList.add('active');
+  activeCat = el.dataset.cat;
+  renderCreators();
+}
+function connect(btn){
+  btn.textContent = 'Request sent ✓';
+  btn.classList.add('sent');
+}
+
+renderCreators();
+const io = new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

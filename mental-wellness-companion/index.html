@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stillwater — Mental Wellness Companion</title>
+<style>
+  :root{
+    --bg:#eef4f6;
+    --ink:#1f3a44;
+    --muted:#6b8a94;
+    --line:rgba(31,58,68,.1);
+    --teal:#2a9d8f;
+    --teal-dk:#1d6b62;
+    --sky:#a8dadc;
+    --lav:#c9b6e4;
+    --cream:#fff;
+    --radius:22px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.65;overflow-x:hidden}
+  h1,h2,h3{font-family:"Segoe UI",system-ui,sans-serif;letter-spacing:-.02em;font-weight:700}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+  a{color:inherit;text-decoration:none}
+
+  header.nav{position:sticky;top:0;z-index:60;background:rgba(238,244,246,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:70px;gap:20px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.2rem}
+  .logo .mark{width:36px;height:36px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;font-size:1.1rem}
+  .nav-links{display:flex;gap:24px;font-size:.92rem;font-weight:600}
+  .nav-links a{color:var(--muted);transition:.2s}
+  .nav-links a:hover{color:var(--ink)}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:999px;font-weight:700;font-size:.9rem;border:none;cursor:pointer;transition:transform .18s,box-shadow .18s;font-family:inherit}
+  .btn-teal{background:var(--teal);color:#fff}
+  .btn-teal:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(42,157,143,.35)}
+  .btn-ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+  .btn-ghost:hover{background:rgba(31,58,68,.05)}
+
+  .hero{padding:70px 0 50px;position:relative;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:0;background:radial-gradient(600px 400px at 85% 5%,rgba(168,218,220,.5),transparent 65%),radial-gradient(500px 400px at 5% 95%,rgba(201,182,228,.35),transparent 70%);z-index:-1}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:50px;align-items:center}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:.78rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:22px;color:var(--teal-dk)}
+  .hero h1{font-size:clamp(2.1rem,4.6vw,3.2rem);line-height:1.12;margin-bottom:18px}
+  .hero h1 span{color:var(--teal-dk)}
+  .hero p{color:var(--muted);font-size:1.08rem;max-width:520px;margin-bottom:28px}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:30px}
+  .hero-stats{display:flex;gap:30px;flex-wrap:wrap}
+  .hero-stats .s b{display:block;font-size:1.5rem;color:var(--teal-dk)}
+  .hero-stats .s span{font-size:.8rem;color:var(--muted);font-weight:600}
+
+  .glass{background:rgba(255,255,255,.65);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.85);border-radius:var(--radius);box-shadow:0 20px 50px rgba(31,58,68,.1)}
+  .mood-card{padding:26px}
+  .mood-card h3{font-size:1.05rem;margin-bottom:6px}
+  .mood-card .sub{font-size:.82rem;color:var(--muted);margin-bottom:18px}
+  .moods{display:flex;gap:10px;justify-content:space-between;margin-bottom:18px}
+  .mood{flex:1;aspect-ratio:1;border-radius:16px;background:#fff;border:2px solid transparent;display:grid;place-items:center;font-size:1.6rem;cursor:pointer;transition:.2s}
+  .mood:hover{transform:translateY(-4px)}
+  .mood.active{border-color:var(--teal);background:rgba(42,157,143,.1);transform:translateY(-4px)}
+  .mood-note{font-size:.85rem;color:var(--muted);text-align:center;min-height:22px;font-weight:600}
+
+  section{padding:64px 0}
+  .sec-head{text-align:center;max-width:640px;margin:0 auto 42px}
+  .sec-head h2{font-size:clamp(1.8rem,3.6vw,2.4rem);margin-bottom:12px}
+  .sec-head p{color:var(--muted)}
+  .kicker{font-size:.76rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--teal-dk);display:block;margin-bottom:10px}
+
+  /* FEATURES */
+  .features{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .feature{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:28px;transition:transform .25s,box-shadow .25s}
+  .feature:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(31,58,68,.1)}
+  .feature .ic{width:50px;height:50px;border-radius:15px;display:grid;place-items:center;font-size:1.4rem;margin-bottom:16px;background:rgba(168,218,220,.4)}
+  .feature h3{font-size:1.12rem;margin-bottom:8px}
+  .feature p{font-size:.9rem;color:var(--muted)}
+
+  /* BREATHING */
+  .breath-wrap{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center}
+  .breath-stage{display:grid;place-items:center;height:340px;position:relative}
+  .breath-circle{width:180px;height:180px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--sky),var(--teal));display:grid;place-items:center;color:#fff;font-weight:800;font-size:1.1rem;transition:transform 4s ease-in-out,box-shadow 4s ease-in-out;box-shadow:0 0 0 0 rgba(42,157,143,.3)}
+  .breath-circle.inhale{transform:scale(1.5);box-shadow:0 0 0 30px rgba(42,157,143,.08)}
+  .breath-circle.exhale{transform:scale(1);box-shadow:0 0 0 0 rgba(42,157,143,.3)}
+  .breath-ring{position:absolute;width:280px;height:280px;border-radius:50%;border:2px dashed rgba(42,157,143,.25)}
+  .breath-controls{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+  .breath-info{display:grid;gap:14px}
+  .breath-info .row{display:flex;gap:12px;align-items:flex-start}
+  .breath-info .row .n{width:30px;height:30px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;font-weight:800;font-size:.85rem;flex-shrink:0}
+  .breath-info .row p{font-size:.92rem;color:var(--muted)}
+
+  /* JOURNAL */
+  .journal{max-width:760px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:32px}
+  .prompt{font-size:1.15rem;font-weight:700;margin-bottom:6px}
+  .prompt-sub{font-size:.85rem;color:var(--muted);margin-bottom:18px}
+  .journal textarea{width:100%;padding:16px;border-radius:14px;border:1.5px solid var(--line);font-family:inherit;font-size:.95rem;min-height:140px;resize:vertical;background:var(--bg)}
+  .journal textarea:focus{outline:none;border-color:var(--teal);background:#fff}
+  .journal-actions{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;justify-content:space-between;align-items:center}
+  .saved-msg{font-size:.85rem;font-weight:700;color:var(--teal-dk)}
+
+  /* HABITS */
+  .habits{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .habit{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:24px}
+  .habit .hh{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+  .habit .hh h3{font-size:1rem}
+  .habit .streak{font-size:.78rem;font-weight:800;color:var(--teal-dk);background:rgba(42,157,143,.12);padding:4px 10px;border-radius:999px}
+  .days{display:flex;gap:6px;flex-wrap:wrap}
+  .day{width:30px;height:30px;border-radius:9px;background:var(--bg);display:grid;place-items:center;font-size:.7rem;font-weight:700;color:var(--muted);cursor:pointer;transition:.2s}
+  .day.done{background:var(--teal);color:#fff}
+  .day:hover{transform:scale(1.1)}
+
+  /* MOOD CHART */
+  .mood-chart{display:flex;align-items:flex-end;gap:12px;height:160px;margin-top:20px}
+  .mc{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end}
+  .mc .b{width:100%;max-width:36px;border-radius:8px 8px 0 0;background:linear-gradient(180deg,var(--sky),var(--teal));transition:height .8s}
+  .mc .d{font-size:.7rem;color:var(--muted);font-weight:600}
+
+  footer{background:var(--ink);color:#fff;padding:50px 0 30px;margin-top:30px}
+  .foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;margin-bottom:34px}
+  footer h4{font-size:1.1rem;margin-bottom:12px}
+  footer p,footer a{opacity:.6;font-size:.88rem}
+  footer a{display:block;margin-bottom:8px;transition:.2s}
+  footer a:hover{opacity:1}
+  .foot-bottom{border-top:1px solid rgba(255,255,255,.12);padding-top:22px;font-size:.8rem;opacity:.5;text-align:center}
+  .crisis{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:16px;font-size:.82rem;margin-top:20px}
+
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s}
+  .reveal.in{opacity:1;transform:none}
+
+  @media(max-width:960px){
+    .hero-grid,.features,.breath-wrap,.habits{grid-template-columns:1fr}
+    .nav-links{display:none}
+    .foot-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="logo"><span class="mark">◍</span> Stillwater</div>
+    <nav class="nav-links">
+      <a href="#mood">Mood</a>
+      <a href="#breathe">Breathe</a>
+      <a href="#journal">Journal</a>
+      <a href="#habits">Habits</a>
+    </nav>
+    <button class="btn btn-teal" onclick="document.getElementById('mood').scrollIntoView()">Check in</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="pill">✦ A gentle daily companion</span>
+      <h1>Small steps toward a <span>calmer mind</span>.</h1>
+      <p>Track your mood, journal with guided prompts, breathe through anxious moments and build habits that actually stick — all at your own pace.</p>
+      <div class="hero-cta">
+        <button class="btn btn-teal" onclick="document.getElementById('mood').scrollIntoView()">Start a check-in →</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('breathe').scrollIntoView()">Try a breathing exercise</button>
+      </div>
+      <div class="hero-stats">
+        <div class="s"><b>320k</b><span>Gentle check-ins</span></div>
+        <div class="s"><b>4.9★</b><span>App store rating</span></div>
+        <div class="s"><b>Private</b><span>By design</span></div>
+      </div>
+    </div>
+    <div class="glass mood-card" id="mood">
+      <h3>How are you feeling right now?</h3>
+      <p class="sub">There's no wrong answer. Just notice.</p>
+      <div class="moods" id="moods">
+        <div class="mood" data-m="1" onclick="pickMood(this,1)">😔</div>
+        <div class="mood" data-m="2" onclick="pickMood(this,2)">😕</div>
+        <div class="mood" data-m="3" onclick="pickMood(this,3)">😐</div>
+        <div class="mood" data-m="4" onclick="pickMood(this,4)">🙂</div>
+        <div class="mood" data-m="5" onclick="pickMood(this,5)">😊</div>
+      </div>
+      <div class="mood-note" id="moodNote">Tap a face to log how you feel.</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">Four gentle tools</span>
+      <h2>Everything you need, nothing you don't</h2>
+    </div>
+    <div class="features">
+      <div class="feature reveal"><div class="ic">🌤️</div><h3>Mood tracking</h3><p>Log how you feel in one tap and watch patterns emerge over weeks — no judgement, just insight.</p></div>
+      <div class="feature reveal"><div class="ic">📓</div><h3>Guided journaling</h3><p>Thoughtful prompts help you untangle your thoughts when a blank page feels too heavy.</p></div>
+      <div class="feature reveal"><div class="ic">🌬️</div><h3>Breathing exercises</h3><p>Calm your nervous system in minutes with guided box breathing and 4-7-8 techniques.</p></div>
+      <div class="feature reveal"><div class="ic">🌱</div><h3>Habit building</h3><p>Small, kind habits — a walk, water, sleep — tracked gently with streaks that motivate without pressure.</p></div>
+      <div class="feature reveal"><div class="ic">🔒</div><h3>Private by design</h3><p>Your entries stay on your device. No ads, no selling data, no judgement.</p></div>
+      <div class="feature reveal"><div class="ic">💬</div><h3>Kind reminders</h3><p>Gentle nudges that invite, never nag — and always let you rest.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="breathe" style="background:linear-gradient(180deg,transparent,rgba(168,218,220,.35),transparent)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">Take a moment</span>
+      <h2>Breathe with me</h2>
+      <p>Follow the circle. Inhale as it grows, exhale as it shrinks.</p>
+    </div>
+    <div class="breath-wrap">
+      <div>
+        <div class="breath-stage">
+          <div class="breath-ring"></div>
+          <div class="breath-circle" id="breathCircle">Ready</div>
+        </div>
+        <div class="breath-controls">
+          <button class="btn btn-teal" id="breathBtn" onclick="toggleBreath()">Start breathing</button>
+          <button class="btn btn-ghost" onclick="setBreathMode('box')">Box 4-4-4-4</button>
+          <button class="btn btn-ghost" onclick="setBreathMode('478')">4-7-8 relax</button>
+        </div>
+      </div>
+      <div class="breath-info reveal">
+        <h3 style="font-size:1.4rem;margin-bottom:8px">Why it works</h3>
+        <div class="row"><div class="n">1</div><p>Slow, deep breathing activates your parasympathetic nervous system — the body's built-in calm-down response.</p></div>
+        <div class="row"><div class="n">2</div><p>Extending your exhale longer than your inhale signals safety to your brain and slows your heart rate.</p></div>
+        <div class="row"><div class="n">3</div><p>Just two minutes is enough to lower stress hormones. Try it before sleep or a difficult conversation.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="journal">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">Guided journaling</span>
+      <h2>A prompt for right now</h2>
+    </div>
+    <div class="journal reveal">
+      <div class="prompt" id="promptText">What's one small thing that went well today?</div>
+      <div class="prompt-sub">Write as much or as little as you like. This stays on your device.</div>
+      <textarea id="journalText" placeholder="Start writing…"></textarea>
+      <div class="journal-actions">
+        <button class="btn btn-ghost" onclick="newPrompt()">New prompt ↻</button>
+        <div style="display:flex;gap:12px;align-items:center">
+          <span class="saved-msg" id="savedMsg"></span>
+          <button class="btn btn-teal" onclick="saveJournal()">Save entry</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="habits" style="background:linear-gradient(180deg,transparent,rgba(201,182,228,.25),transparent)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">Gentle habits</span>
+      <h2>Build a kinder routine</h2>
+      <p>Tap a day to mark it done. Streaks are encouragement, never a stick.</p>
+    </div>
+    <div class="habits" id="habits"></div>
+    <div class="glass" style="padding:26px;margin-top:24px">
+      <h3 style="font-size:1.05rem;margin-bottom:4px">Your mood this week</h3>
+      <p style="font-size:.82rem;color:var(--muted)">A gentle look at how you've been feeling</p>
+      <div class="mood-chart" id="moodChart"></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <h4>Stillwater</h4>
+        <p>A gentle mental wellness companion for mood, journaling, breathing and habits. Private by design.</p>
+        <div class="crisis">If you're in crisis, please reach out to a local emergency service or a crisis helpline in your country. You deserve support.</div>
+      </div>
+      <div><h4 style="font-size:1rem">Tools</h4><a href="#mood">Mood check-in</a><a href="#breathe">Breathing</a><a href="#journal">Journal</a><a href="#habits">Habits</a></div>
+      <div><h4 style="font-size:1rem">Company</h4><a href="#">Privacy</a><a href="#">About</a><a href="#">Contact</a></div>
+    </div>
+    <div class="foot-bottom">© 2026 Stillwater. A demo concept site. Not a substitute for professional mental health care.</div>
+  </div>
+</footer>
+
+<script>
+/* MOOD */
+const moodMsgs = {
+  1:"It's okay to feel low. Be gentle with yourself today. 💙",
+  2:"A tough moment. A few slow breaths might help. 🌬️",
+  3:"Steady is fine. Not every day needs to sparkle. 🍃",
+  4:"Glad you're doing okay. Notice what's working. 🌤️",
+  5:"Wonderful — savour this feeling. ✨"
+};
+function pickMood(el,m){
+  document.querySelectorAll('.mood').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('moodNote').textContent = moodMsgs[m];
+}
+
+/* BREATHING */
+let breathing = false, breathTimer = null, breathMode = 'box';
+function setBreathMode(m){ breathMode = m; if(breathing){ stopBreath(); startBreath(); } }
+function toggleBreath(){ breathing ? stopBreath() : startBreath(); }
+function startBreath(){
+  breathing = true;
+  document.getElementById('breathBtn').textContent = 'Stop';
+  runBreathCycle();
+}
+function stopBreath(){
+  breathing = false;
+  clearTimeout(breathTimer);
+  document.getElementById('breathBtn').textContent = 'Start breathing';
+  const c = document.getElementById('breathCircle');
+  c.classList.remove('inhale','exhale');
+  c.textContent = 'Ready';
+}
+function runBreathCycle(){
+  if(!breathing) return;
+  const c = document.getElementById('breathCircle');
+  const inhale = breathMode==='box' ? 4000 : 4000;
+  const hold = breathMode==='box' ? 4000 : 7000;
+  const exhale = breathMode==='box' ? 4000 : 8000;
+  c.style.transitionDuration = (inhale/1000)+'s';
+  c.classList.remove('exhale'); c.classList.add('inhale');
+  c.textContent = 'Inhale';
+  breathTimer = setTimeout(()=>{
+    if(!breathing) return;
+    c.textContent = 'Hold';
+    breathTimer = setTimeout(()=>{
+      if(!breathing) return;
+      c.style.transitionDuration = (exhale/1000)+'s';
+      c.classList.remove('inhale'); c.classList.add('exhale');
+      c.textContent = 'Exhale';
+      breathTimer = setTimeout(()=>{ if(breathing) runBreathCycle(); }, exhale);
+    }, hold);
+  }, inhale);
+}
+
+/* JOURNAL */
+const prompts = [
+  "What's one small thing that went well today?",
+  "What's been weighing on your mind lately?",
+  "Describe a moment today when you felt calm.",
+  "What would you say to a friend feeling how you feel?",
+  "Name three things you're grateful for right now.",
+  "What's one thing you can let go of today?"
+];
+let pi = 0;
+function newPrompt(){
+  pi = (pi+1) % prompts.length;
+  document.getElementById('promptText').textContent = prompts[pi];
+  document.getElementById('savedMsg').textContent = '';
+}
+function saveJournal(){
+  const t = document.getElementById('journalText').value.trim();
+  const msg = document.getElementById('savedMsg');
+  if(!t){ msg.style.color='var(--muted)'; msg.textContent='Write something first 🌱'; return; }
+  msg.style.color='var(--teal-dk)';
+  msg.textContent = '✓ Saved privately to your device';
+  setTimeout(()=>{ msg.textContent=''; }, 2500);
+}
+
+/* HABITS */
+const habits = [
+  {name:"Morning walk",icon:"🚶",days:7,done:[1,1,1,0,1,1,0]},
+  {name:"Drink water",icon:"💧",days:7,done:[1,1,1,1,1,0,0]},
+  {name:"Sleep by 11pm",icon:"🌙",days:7,done:[1,0,1,1,0,1,0]},
+  {name:"No screens 1hr",icon:"📵",days:7,done:[0,1,1,0,1,0,0]},
+  {name:"Gratitude note",icon:"✍️",days:7,done:[1,1,0,1,1,1,0]},
+  {name:"Stretch",icon:"🧘",days:7,done:[1,1,1,1,0,0,0]}
+];
+const dayNames = ['M','T','W','T','F','S','S'];
+function renderHabits(){
+  document.getElementById('habits').innerHTML = habits.map((h,hi)=>{
+    const streak = h.done.filter(x=>x).length;
+    return `<div class="habit reveal in">
+      <div class="hh"><h3>${h.icon} ${h.name}</h3><span class="streak">${streak}/7</span></div>
+      <div class="days">${h.done.map((d,di)=>`<div class="day ${d?'done':''}" onclick="toggleDay(${hi},${di})">${dayNames[di]}</div>`).join('')}</div>
+    </div>`;
+  }).join('');
+}
+function toggleDay(hi,di){
+  habits[hi].done[di] = habits[hi].done[di] ? 0 : 1;
+  renderHabits();
+}
+
+/* MOOD CHART */
+const weekMoods = [3,4,2,4,5,3,4];
+function renderMoodChart(){
+  document.getElementById('moodChart').innerHTML = weekMoods.map((m,i)=>`
+    <div class="mc"><div class="b" style="height:0" data-h="${m/5*100}"></div><div class="d">${dayNames[i]}</div></div>`).join('');
+  setTimeout(()=>{ document.querySelectorAll('.mc .b').forEach(b=>{ b.style.height = b.dataset.h+'%'; }); }, 200);
+}
+
+renderHabits();
+renderMoodChart();
+const io = new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nova Chen — Interactive Portfolio</title>
+<style>
+  :root{
+    --bg:#08080c;
+    --panel:#101018;
+    --line:rgba(255,255,255,.08);
+    --text:#f5f5f7;
+    --muted:rgba(245,245,247,.55);
+    --lime:#c6f24e;
+    --cyan:#4ee0f2;
+    --orange:#ff7a45;
+    --radius:20px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+  h1,h2,h3{font-family:"Segoe UI",system-ui,sans-serif;letter-spacing:-.04em;font-weight:800}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+  a{color:inherit;text-decoration:none}
+
+  header.nav{position:sticky;top:0;z-index:60;background:rgba(8,8,12,.7);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:70px;gap:20px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.1rem}
+  .logo .mark{width:34px;height:34px;border-radius:10px;background:var(--lime);color:#08080c;display:grid;place-items:center;font-size:1rem;font-weight:900}
+  .nav-links{display:flex;gap:24px;font-size:.9rem;font-weight:600}
+  .nav-links a{color:var(--muted);transition:.2s}
+  .nav-links a:hover{color:var(--lime)}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:12px;font-weight:700;font-size:.9rem;border:none;cursor:pointer;transition:transform .18s,box-shadow .18s;font-family:inherit}
+  .btn-lime{background:var(--lime);color:#08080c}
+  .btn-lime:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(198,242,78,.3)}
+  .btn-ghost{background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--text)}
+  .btn-ghost:hover{background:rgba(255,255,255,.12)}
+
+  /* HERO */
+  .hero{padding:80px 0 60px;position:relative;overflow:hidden;min-height:88vh;display:flex;align-items:center}
+  #bg3d{position:absolute;inset:0;z-index:0;opacity:.9}
+  .hero .wrap{position:relative;z-index:2}
+  .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:50px;align-items:center}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:.76rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:22px;color:var(--lime)}
+  .hero h1{font-size:clamp(2.6rem,6vw,4.4rem);line-height:1;margin-bottom:20px}
+  .hero h1 span{color:var(--lime)}
+  .hero .role{font-size:1.15rem;color:var(--muted);margin-bottom:26px;max-width:520px}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:34px}
+  .hero-stats{display:flex;gap:34px;flex-wrap:wrap}
+  .hero-stats .s b{display:block;font-size:1.6rem;color:var(--lime)}
+  .hero-stats .s span{font-size:.78rem;color:var(--muted);font-weight:600}
+
+  /* AI ASSISTANT */
+  .assistant{background:rgba(16,16,24,.75);backdrop-filter:blur(20px);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:0 30px 70px rgba(0,0,0,.6)}
+  .assistant .ah{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .assistant .ah .dot{width:10px;height:10px;border-radius:50%;background:var(--lime);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .assistant .ah b{font-size:.95rem}
+  .assistant .ah span{font-size:.76rem;color:var(--muted);margin-left:auto}
+  .chat{height:230px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;margin-bottom:14px;padding-right:6px}
+  .msg{max-width:85%;padding:10px 14px;border-radius:14px;font-size:.86rem;animation:fadeUp .3s}
+  .msg.bot{background:rgba(255,255,255,.06);border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px}
+  .msg.user{background:var(--lime);color:#08080c;align-self:flex-end;border-bottom-right-radius:4px;font-weight:600}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .chat-input{display:flex;gap:8px}
+  .chat-input input{flex:1;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--text);font-family:inherit;font-size:.88rem}
+  .chat-input input:focus{outline:none;border-color:var(--lime)}
+  .chat-input button{background:var(--lime);color:#08080c;border:none;border-radius:12px;padding:0 16px;font-weight:800;cursor:pointer;font-family:inherit}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .chip{background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:.76rem;font-weight:600;cursor:pointer;color:var(--muted);transition:.2s;font-family:inherit}
+  .chip:hover{border-color:var(--lime);color:var(--lime)}
+
+  section{padding:80px 0}
+  .sec-head{margin-bottom:44px}
+  .sec-head h2{font-size:clamp(1.9rem,4vw,2.8rem);margin-bottom:12px}
+  .sec-head p{color:var(--muted);max-width:560px}
+  .kicker{font-size:.76rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--lime);display:block;margin-bottom:12px}
+
+  /* PROJECTS */
+  .projects{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+  .proj{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:transform .3s,border-color .3s;cursor:pointer}
+  .proj:hover{transform:translateY(-8px);border-color:rgba(198,242,78,.4)}
+  .proj .cover{height:200px;display:grid;place-items:center;font-size:3.4rem;position:relative;overflow:hidden}
+  .proj .cover::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.5))}
+  .proj .body{padding:24px}
+  .proj .tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .proj .tags span{font-size:.7rem;font-weight:700;background:rgba(198,242,78,.12);color:var(--lime);padding:4px 10px;border-radius:999px}
+  .proj h3{font-size:1.25rem;margin-bottom:8px}
+  .proj p{font-size:.88rem;color:var(--muted);margin-bottom:16px}
+  .proj .metrics{display:flex;gap:20px;padding-top:16px;border-top:1px solid var(--line)}
+  .proj .metrics .m b{display:block;font-size:1.1rem;color:var(--cyan)}
+  .proj .metrics .m span{font-size:.72rem;color:var(--muted)}
+
+  /* CASE STUDY MODAL */
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);display:none;place-items:center;z-index:100;padding:20px;overflow-y:auto}
+  .modal-bg.open{display:grid}
+  .modal{background:var(--panel);border:1px solid var(--line);border-radius:24px;max-width:680px;width:100%;padding:34px;animation:pop .3s;max-height:90vh;overflow-y:auto}
+  @keyframes pop{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:none}}
+  .modal h3{font-size:1.6rem;margin-bottom:8px}
+  .modal .msub{color:var(--lime);font-size:.85rem;font-weight:700;margin-bottom:20px}
+  .modal h4{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:20px 0 8px}
+  .modal p{font-size:.92rem;color:rgba(245,245,247,.8);margin-bottom:10px}
+  .modal .close{position:sticky;top:0;float:right;background:rgba(255,255,255,.08);border:1px solid var(--line);color:var(--text);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1rem}
+
+  /* SKILLS */
+  .skills{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .skill{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px}
+  .skill h3{font-size:1rem;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+  .skill .bar{height:8px;background:rgba(255,255,255,.07);border-radius:999px;overflow:hidden;margin-bottom:8px}
+  .skill .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--lime),var(--cyan));border-radius:999px;transition:width 1s}
+  .skill .lbl{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);font-weight:600}
+
+  /* TIMELINE */
+  .timeline{position:relative;padding-left:30px}
+  .timeline::before{content:"";position:absolute;left:8px;top:0;bottom:0;width:2px;background:var(--line)}
+  .tl-item{position:relative;padding-bottom:34px}
+  .tl-item::before{content:"";position:absolute;left:-30px;top:6px;width:18px;height:18px;border-radius:50%;background:var(--bg);border:3px solid var(--lime)}
+  .tl-item .yr{font-size:.78rem;font-weight:800;color:var(--lime);letter-spacing:.06em}
+  .tl-item h3{font-size:1.1rem;margin:4px 0}
+  .tl-item p{font-size:.88rem;color:var(--muted)}
+
+  /* CONTACT */
+  .contact{background:linear-gradient(135deg,rgba(198,242,78,.1),rgba(78,224,242,.06));border:1px solid var(--line);border-radius:28px;padding:52px;text-align:center}
+  .contact h2{font-size:clamp(1.8rem,4vw,2.6rem);margin-bottom:14px}
+  .contact p{color:var(--muted);max-width:480px;margin:0 auto 26px}
+  .contact .row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+  footer{border-top:1px solid var(--line);padding:40px 0;margin-top:30px}
+  .foot-inner{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+  footer p{color:var(--muted);font-size:.85rem}
+  .socials{display:flex;gap:16px}
+  .socials a{color:var(--muted);font-size:.85rem;font-weight:600;transition:.2s}
+  .socials a:hover{color:var(--lime)}
+
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s,transform .7s}
+  .reveal.in{opacity:1;transform:none}
+
+  @media(max-width:960px){
+    .hero-grid,.projects,.skills{grid-template-columns:1fr}
+    .nav-links{display:none}
+    .hero{min-height:auto}
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="logo"><span class="mark">N</span> Nova Chen</div>
+    <nav class="nav-links">
+      <a href="#work">Work</a>
+      <a href="#skills">Skills</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <button class="btn btn-lime" onclick="document.getElementById('contact').scrollIntoView()">Let's talk</button>
+  </div>
+</header>
+
+<section class="hero">
+  <canvas id="bg3d"></canvas>
+  <div class="wrap hero-grid">
+    <div>
+      <span class="pill">● Available for freelance</span>
+      <h1>Designing <span>digital experiences</span> that feel alive.</h1>
+      <p class="role">I'm Nova — a product designer and creative developer blending 3D, motion and interaction to build interfaces people remember.</p>
+      <div class="hero-cta">
+        <button class="btn btn-lime" onclick="document.getElementById('work').scrollIntoView()">View my work →</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('contact').scrollIntoView()">Get in touch</button>
+      </div>
+      <div class="hero-stats">
+        <div class="s"><b>8+</b><span>Years designing</span></div>
+        <div class="s"><b>60+</b><span>Projects shipped</span></div>
+        <div class="s"><b>12</b><span>Design awards</span></div>
+      </div>
+    </div>
+    <div class="assistant">
+      <div class="ah"><span class="dot"></span><b>Nova's AI assistant</b><span>online</span></div>
+      <div class="chat" id="chat">
+        <div class="msg bot">Hi! I'm Nova's AI assistant. Ask me anything about her work, skills or availability. 👋</div>
+      </div>
+      <div class="chat-input">
+        <input id="chatInput" placeholder="Ask about Nova…" onkeydown="if(event.key==='Enter')sendChat()">
+        <button onclick="sendChat()">→</button>
+      </div>
+      <div class="chips">
+        <button class="chip" onclick="quickAsk('What does Nova do?')">What does Nova do?</button>
+        <button class="chip" onclick="quickAsk('What are her skills?')">Her skills</button>
+        <button class="chip" onclick="quickAsk('Is she available?')">Availability</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="work">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">Selected work</span>
+      <h2>Projects &amp; case studies</h2>
+      <p>Click any project to read the full case study — the problem, the process and the results.</p>
+    </div>
+    <div class="projects" id="projects"></div>
+  </div>
+</section>
+
+<section id="skills" style="background:linear-gradient(180deg,transparent,rgba(198,242,78,.04),transparent)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">Capabilities</span>
+      <h2>What I bring to a team</h2>
+    </div>
+    <div class="skills" id="skills"></div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">The journey</span>
+      <h2>A little about me</h2>
+    </div>
+    <div class="timeline">
+      <div class="tl-item reveal"><div class="yr">2024 — NOW</div><h3>Independent Design Studio</h3><p>Partnering with startups and studios on product design, brand systems and interactive web experiences.</p></div>
+      <div class="tl-item reveal"><div class="yr">2021 — 2024</div><h3>Lead Product Designer · Lumen</h3><p>Led design for a fintech platform serving 3M users. Built the design system and grew the team from 2 to 9.</p></div>
+      <div class="tl-item reveal"><div class="yr">2018 — 2021</div><h3>Senior Designer · Orbit Labs</h3><p>Shipped award-winning mobile apps and led the company's shift to motion-first interfaces.</p></div>
+      <div class="tl-item reveal"><div class="yr">2016 — 2018</div><h3>Designer · Studio Fold</h3><p>Cut my teeth on brand identity and web design for 30+ clients across culture and tech.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="contact reveal">
+      <h2>Let's build something memorable</h2>
+      <p>I'm currently taking on select freelance projects. Tell me what you're working on.</p>
+      <div class="row">
+        <button class="btn btn-lime" onclick="alert('Email copied: hello@novachen.design (demo)')">hello@novachen.design</button>
+        <button class="btn btn-ghost" onclick="alert('Calendar booking is a demo action.')">Book a call</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-inner">
+    <p>© 2026 Nova Chen. A demo concept portfolio. All projects are sample content.</p>
+    <div class="socials"><a href="#">Dribbble</a><a href="#">LinkedIn</a><a href="#">GitHub</a><a href="#">X</a></div>
+  </div>
+</footer>
+
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal"></div>
+</div>
+
+<script>
+/* ---- 3D-ish canvas background ---- */
+(function(){
+  const canvas = document.getElementById('bg3d');
+  const ctx = canvas.getContext('2d');
+  let w,h,particles=[];
+  function resize(){ w = canvas.width = canvas.offsetWidth; h = canvas.height = canvas.offsetHeight; }
+  function init(){
+    particles = [];
+    const count = Math.min(70, Math.floor(w/22));
+    for(let i=0;i<count;i++){
+      particles.push({x:Math.random()*w,y:Math.random()*h,z:Math.random()*1+0.3,vx:(Math.random()-.5)*0.3,vy:(Math.random()-.5)*0.3,r:Math.random()*2+0.6});
+    }
+  }
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    for(let i=0;i<particles.length;i++){
+      const p = particles[i];
+      p.x += p.vx; p.y += p.vy;
+      if(p.x<0||p.x>w) p.vx*=-1;
+      if(p.y<0||p.y>h) p.vy*=-1;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r*p.z,0,Math.PI*2);
+      ctx.fillStyle = 'rgba(198,242,78,'+(0.12+p.z*0.25)+')';
+      ctx.fill();
+      for(let j=i+1;j<particles.length;j++){
+        const q = particles[j];
+        const dx=p.x-q.x, dy=p.y-q.y, d=Math.sqrt(dx*dx+dy*dy);
+        if(d<130){
+          ctx.beginPath();
+          ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y);
+          ctx.strokeStyle = 'rgba(78,224,242,'+(0.08*(1-d/130))+')';
+          ctx.lineWidth = 0.6;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  resize(); init(); draw();
+  window.addEventListener('resize', ()=>{ resize(); init(); });
+})();
+
+/* ---- Projects ---- */
+const projects = [
+  {title:"Lumen Finance App",sub:"Fintech · Product Design",icon:"💳",bg:"linear-gradient(160deg,#1a1a2e,#16213e)",
+   tags:["Mobile","Design System","Fintech"],
+   desc:"A complete redesign of a personal finance app used by 3M people, focused on clarity and trust.",
+   metrics:[{v:"+34%",l:"Activation"},{v:"4.8★",l:"App rating"},{v:"3M",l:"Users"}],
+   problem:"Users found the old app overwhelming — too many numbers, no clear next step. Support tickets about 'where is my money going' were the #1 complaint.",
+   process:"Ran 24 user interviews, mapped the mental model, then rebuilt the information architecture around three questions: what do I have, what did I spend, what should I do next.",
+   result:"Activation rose 34%, app store rating climbed from 3.9 to 4.8, and support tickets dropped 41% in the first quarter."},
+  {title:"Orbit Motion System",sub:"Design System · Motion",icon:"🛰️",bg:"linear-gradient(160deg,#0f2027,#203a43)",
+   tags:["Motion","Design System","Web"],
+   desc:"A motion language and component library that gave a 40-person product team one shared animation vocabulary.",
+   metrics:[{v:"40+",l:"Components"},{v:"-60%",l:"Dev time"},{v:"12",l:"Teams"}],
+   problem:"Every team animated differently, so the product felt inconsistent and engineers rebuilt the same transitions repeatedly.",
+   process:"Audited 200+ existing animations, defined 6 core motion principles, and shipped a documented library with tokens and code snippets.",
+   result:"Development time on new screens fell 60% and the product finally felt like one coherent experience."},
+  {title:"Verdant Brand Identity",sub:"Branding · Art Direction",icon:"🌿",bg:"linear-gradient(160deg,#134e4a,#1b4332)",
+   tags:["Branding","Identity","Print"],
+   desc:"A full identity for a sustainable goods marketplace — logo, type system, packaging and web.",
+   metrics:[{v:"+52%",l:"Brand recall"},{v:"3",l:"Awards"},{v:"1",l:"Rebrand"}],
+   problem:"The brand looked like every other eco startup — generic green, forgettable type, no point of view.",
+   process:"Built the identity around the idea of 'quiet confidence' — a warm palette, a distinctive serif, and photography that celebrates imperfection.",
+   result:"Brand recall rose 52% in testing and the identity won three design awards."},
+  {title:"Pulse Music Visualiser",sub:"Creative Dev · WebGL",icon:"🎵",bg:"linear-gradient(160deg,#2d1b4e,#4a1d6e)",
+   tags:["WebGL","Audio","Creative"],
+   desc:"An interactive audio-reactive visualiser built for a music streaming launch campaign.",
+   metrics:[{v:"1.2M",l:"Plays"},{v:"8min",l:"Avg session"},{v:"60fps",l:"Smooth"}],
+   problem:"The campaign needed something shareable that made the product's audio quality tangible online.",
+   process:"Built a WebGL visualiser that reacts to the live audio stream, with a shareable clip export and mobile-first performance budget.",
+   result:"1.2M plays in the first month with an average session of 8 minutes — 4× the campaign target."}
+];
+function renderProjects(){
+  document.getElementById('projects').innerHTML = projects.map((p,i)=>`
+    <div class="proj reveal in" onclick="openCase(${i})">
+      <div class="cover" style="background:${p.bg}">${p.icon}</div>
+      <div class="body">
+        <div class="tags">${p.tags.map(t=>`<span>${t}</span>`).join('')}</div>
+        <h3>${p.title}</h3>
+        <p>${p.desc}</p>
+        <div class="metrics">${p.metrics.map(m=>`<div class="m"><b>${m.v}</b><span>${m.l}</span></div>`).join('')}</div>
+      </div>
+    </div>`).join('');
+}
+function openCase(i){
+  const p = projects[i];
+  document.getElementById('modal').innerHTML = `
+    <button class="close" onclick="closeModal()">✕</button>
+    <h3>${p.title}</h3>
+    <div class="msub">${p.sub}</div>
+    <h4>The problem</h4><p>${p.problem}</p>
+    <h4>The process</h4><p>${p.process}</p>
+    <h4>The result</h4><p>${p.result}</p>
+    <div class="metrics" style="display:flex;gap:24px;margin-top:24px;padding-top:20px;border-top:1px solid var(--line)">
+      ${p.metrics.map(m=>`<div><b style="display:block;font-size:1.3rem;color:var(--lime)">${m.v}</b><span style="font-size:.75rem;color:var(--muted)">${m.l}</span></div>`).join('')}
+    </div>`;
+  document.getElementById('modalBg').classList.add('open');
+}
+function closeModal(){ document.getElementById('modalBg').classList.remove('open'); }
+
+/* ---- Skills ---- */
+const skills = [
+  {name:"Product Design",v:95},{name:"Interaction Design",v:92},{name:"Design Systems",v:90},
+  {name:"Creative Coding",v:82},{name:"Motion Design",v:88},{name:"3D / WebGL",v:78}
+];
+function renderSkills(){
+  document.getElementById('skills').innerHTML = skills.map(s=>`
+    <div class="skill reveal in">
+      <h3>${s.name}</h3>
+      <div class="bar"><i style="width:0" data-w="${s.v}"></i></div>
+      <div class="lbl"><span>Proficiency</span><span>${s.v}%</span></div>
+    </div>`).join('');
+  setTimeout(()=>{ document.querySelectorAll('.skill .bar i').forEach(b=>{ b.style.width = b.dataset.w+'%'; }); }, 300);
+}
+
+/* ---- AI Assistant ---- */
+const chat = document.getElementById('chat');
+const answers = [
+  {k:["do","work","about","who"],a:"Nova is a product designer and creative developer with 8+ years of experience. She blends 3D, motion and interaction design to build memorable digital products."},
+  {k:["skill","tool","stack","know"],a:"Her core skills are product design, interaction design, design systems, motion design, creative coding and 3D/WebGL. She works mostly in Figma, After Effects and code."},
+  {k:["available","hire","freelance","work with"],a:"Yes — Nova is currently available for select freelance projects. You can reach her at hello@novachen.design or book a call."},
+  {k:["project","portfolio","case","work"],a:"She's shipped 60+ projects including a fintech app redesign (3M users), a motion design system, a brand identity and a WebGL music visualiser. Scroll up to see the case studies."},
+  {k:["award","recognition"],a:"Nova has won 12 design awards, including three for the Verdant brand identity."},
+  {k:["contact","email","reach"],a:"You can reach Nova at hello@novachen.design, or use the contact section below to book a call."}
+];
+function botReply(text){
+  const t = text.toLowerCase();
+  for(const a of answers){ if(a.k.some(k=>t.includes(k))) return a.a; }
+  return "Great question! Nova specialises in product design, motion and creative development. Try asking about her skills, projects or availability — or scroll down to get in touch.";
+}
+function addMsg(text,who){
+  const d = document.createElement('div');
+  d.className = 'msg '+who;
+  d.textContent = text;
+  chat.appendChild(d);
+  chat.scrollTop = chat.scrollHeight;
+}
+function sendChat(){
+  const input = document.getElementById('chatInput');
+  const t = input.value.trim();
+  if(!t) return;
+  addMsg(t,'user');
+  input.value = '';
+  setTimeout(()=>addMsg(botReply(t),'bot'), 500);
+}
+function quickAsk(q){
+  addMsg(q,'user');
+  setTimeout(()=>addMsg(botReply(q),'bot'), 500);
+}
+
+renderProjects();
+renderSkills();
+const io = new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
