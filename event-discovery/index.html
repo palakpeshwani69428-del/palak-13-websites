@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gatherly — Event Discovery</title>
+<style>
+  :root{
+    --bg:#fff8f0;
+    --ink:#2a1a12;
+    --muted:#8a7568;
+    --line:rgba(42,26,18,.1);
+    --coral:#ff5a5f;
+    --coral-dk:#d63e43;
+    --sun:#ffb400;
+    --teal:#00a699;
+    --plum:#7b2d8e;
+    --radius:20px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;overflow-x:hidden}
+  h1,h2,h3{font-family:"Segoe UI",system-ui,sans-serif;letter-spacing:-.03em;font-weight:800}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 22px}
+  a{color:inherit;text-decoration:none}
+
+  header.nav{position:sticky;top:0;z-index:60;background:rgba(255,248,240,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:70px;gap:20px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.2rem}
+  .logo .mark{width:36px;height:36px;border-radius:12px;background:var(--coral);color:#fff;display:grid;place-items:center;font-size:1.1rem}
+  .nav-links{display:flex;gap:24px;font-size:.92rem;font-weight:600}
+  .nav-links a{color:var(--muted);transition:.2s}
+  .nav-links a:hover{color:var(--ink)}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:12px;font-weight:700;font-size:.9rem;border:none;cursor:pointer;transition:transform .18s,box-shadow .18s;font-family:inherit}
+  .btn-coral{background:var(--coral);color:#fff}
+  .btn-coral:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(255,90,95,.35)}
+  .btn-ghost{background:#fff;border:1.5px solid var(--line);color:var(--ink)}
+  .btn-ghost:hover{background:#fdf1e6}
+
+  .hero{padding:60px 0 40px;position:relative;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:0;background:radial-gradient(600px 400px at 88% 5%,rgba(255,180,0,.2),transparent 65%),radial-gradient(500px 400px at 5% 95%,rgba(255,90,95,.14),transparent 70%);z-index:-1}
+  .hero h1{font-size:clamp(2.2rem,5vw,3.4rem);line-height:1.08;max-width:760px;margin-bottom:18px}
+  .hero h1 span{color:var(--coral)}
+  .hero p{color:var(--muted);font-size:1.08rem;max-width:560px;margin-bottom:28px}
+  .searchbar{display:flex;gap:10px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 8px 8px 20px;max-width:680px;box-shadow:0 14px 34px rgba(42,26,18,.1);flex-wrap:wrap}
+  .searchbar input{flex:1;border:none;outline:none;font-size:.95rem;font-family:inherit;background:transparent;min-width:160px;padding:8px 0}
+  .searchbar select{border:none;outline:none;font-family:inherit;font-size:.9rem;font-weight:600;background:transparent;color:var(--coral);cursor:pointer}
+  .quick-tags{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+  .quick-tags button{background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:.82rem;font-weight:600;cursor:pointer;transition:.2s;font-family:inherit}
+  .quick-tags button:hover{border-color:var(--coral);color:var(--coral);transform:translateY(-2px)}
+
+  .strip{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:40px}
+  .strip .s{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px;text-align:center}
+  .strip .s b{display:block;font-size:1.6rem;color:var(--coral)}
+  .strip .s span{font-size:.8rem;color:var(--muted);font-weight:600}
+
+  section{padding:60px 0}
+  .sec-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px;gap:20px;flex-wrap:wrap}
+  .sec-head h2{font-size:clamp(1.7rem,3.4vw,2.3rem)}
+  .sec-head p{color:var(--muted);max-width:520px}
+  .kicker{font-size:.76rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--coral);display:block;margin-bottom:8px}
+
+  .cats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:30px}
+  .cat{padding:10px 18px;border-radius:999px;background:#fff;border:1.5px solid var(--line);font-weight:700;font-size:.86rem;cursor:pointer;transition:.2s;font-family:inherit;display:flex;align-items:center;gap:8px}
+  .cat.active{background:var(--coral);color:#fff;border-color:var(--coral)}
+  .cat:hover:not(.active){border-color:var(--coral)}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:transform .25s,box-shadow .25s;display:flex;flex-direction:column;cursor:pointer}
+  .card:hover{transform:translateY(-6px);box-shadow:0 20px 44px rgba(42,26,18,.13)}
+  .card .cover{height:150px;display:grid;place-items:center;font-size:3rem;position:relative}
+  .card .date{position:absolute;top:12px;left:12px;background:#fff;border-radius:12px;padding:6px 12px;text-align:center;box-shadow:0 6px 16px rgba(0,0,0,.12)}
+  .card .date b{display:block;font-size:1.1rem;line-height:1;color:var(--coral)}
+  .card .date span{font-size:.68rem;font-weight:700;text-transform:uppercase;color:var(--muted)}
+  .card .price-tag{position:absolute;top:12px;right:12px;background:var(--teal);color:#fff;font-size:.72rem;font-weight:800;padding:5px 11px;border-radius:999px}
+  .card .body{padding:20px;flex:1;display:flex;flex-direction:column}
+  .card .type{font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--coral);margin-bottom:8px}
+  .card h3{font-size:1.08rem;margin-bottom:8px}
+  .card .desc{font-size:.85rem;color:var(--muted);margin-bottom:14px;flex:1}
+  .card .meta{display:flex;gap:14px;font-size:.78rem;color:var(--muted);font-weight:600;flex-wrap:wrap}
+  .card .foot{display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid var(--line);margin-top:14px}
+  .card .attendees{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--muted);font-weight:600}
+  .avs{display:flex}
+  .avs i{width:24px;height:24px;border-radius:50%;border:2px solid #fff;margin-left:-8px;display:grid;place-items:center;font-size:.6rem;font-weight:800;color:#fff;font-style:normal}
+  .avs i:first-child{margin-left:0}
+
+  /* FEATURED */
+  .featured{display:grid;grid-template-columns:1.2fr 1fr;gap:0;background:#fff;border:1px solid var(--line);border-radius:28px;overflow:hidden;margin-bottom:20px}
+  .featured .fc{background:linear-gradient(160deg,var(--plum),#4a1d6e);display:grid;place-items:center;font-size:5rem;min-height:280px;position:relative}
+  .featured .fc .tag{position:absolute;top:18px;left:18px;background:var(--sun);color:#2a1a12;font-size:.72rem;font-weight:800;padding:6px 14px;border-radius:999px;text-transform:uppercase;letter-spacing:.05em}
+  .featured .fb{padding:36px}
+  .featured .fb h3{font-size:1.6rem;margin-bottom:10px}
+  .featured .fb p{color:var(--muted);margin-bottom:20px}
+  .featured .fb .info{display:grid;gap:10px;margin-bottom:22px}
+  .featured .fb .info div{display:flex;gap:10px;font-size:.9rem;font-weight:600}
+  .featured .fb .info span{color:var(--muted);font-weight:600}
+
+  /* CTA */
+  .cta{background:var(--coral);color:#fff;border-radius:28px;padding:52px;text-align:center;position:relative;overflow:hidden}
+  .cta::before{content:"";position:absolute;inset:0;background:radial-gradient(500px 300px at 20% 20%,rgba(255,180,0,.3),transparent 70%)}
+  .cta h2{font-size:clamp(1.7rem,3.4vw,2.4rem);margin-bottom:14px;position:relative}
+  .cta p{opacity:.9;max-width:520px;margin:0 auto 26px;position:relative}
+  .cta .btn{position:relative;background:#fff;color:var(--coral)}
+
+  footer{background:var(--ink);color:#fff;padding:50px 0 30px;margin-top:30px}
+  .foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;margin-bottom:34px}
+  footer h4{font-size:1.1rem;margin-bottom:12px}
+  footer p,footer a{opacity:.6;font-size:.88rem}
+  footer a{display:block;margin-bottom:8px;transition:.2s}
+  footer a:hover{opacity:1}
+  .foot-bottom{border-top:1px solid rgba(255,255,255,.12);padding-top:22px;font-size:.8rem;opacity:.5;text-align:center}
+
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s}
+  .reveal.in{opacity:1;transform:none}
+
+  @media(max-width:960px){
+    .grid,.strip,.featured{grid-template-columns:1fr}
+    .nav-links{display:none}
+    .foot-grid{grid-template-columns:1fr}
+  }
+  @media(max-width:620px){ .grid,.strip{grid-template-columns:1fr} .cta{padding:34px 22px} }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="logo"><span class="mark">◈</span> Gatherly</div>
+    <nav class="nav-links">
+      <a href="#events">Events</a>
+      <a href="#featured">Featured</a>
+      <a href="#host">Host</a>
+    </nav>
+    <button class="btn btn-coral" onclick="document.getElementById('host').scrollIntoView()">Create event</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="kicker">Discover what's happening near you</span>
+    <h1>Find your next <span>unforgettable</span> event.</h1>
+    <p>Workshops, college events, concerts and meetups — all in one place, filtered by what you actually love.</p>
+    <div class="searchbar">
+      <input id="searchInput" placeholder="Search events, topics or venues…" oninput="filterEvents()">
+      <select id="searchCat" onchange="filterEvents()">
+        <option value="all">All types</option>
+        <option value="Workshop">Workshops</option>
+        <option value="College">College</option>
+        <option value="Concert">Concerts</option>
+        <option value="Meetup">Meetups</option>
+      </select>
+      <button class="btn btn-coral" onclick="filterEvents()">Search</button>
+    </div>
+    <div class="quick-tags">
+      <button onclick="quickSearch('Workshop')">🎨 Workshops</button>
+      <button onclick="quickSearch('College')">🎓 College events</button>
+      <button onclick="quickSearch('Concert')">🎵 Concerts</button>
+      <button onclick="quickSearch('Meetup')">☕ Meetups</button>
+    </div>
+    <div class="strip">
+      <div class="s"><b>4,200+</b><span>Events this month</span></div>
+      <div class="s"><b>180k</b><span>Attendees</span></div>
+      <div class="s"><b>62</b><span>Cities</span></div>
+      <div class="s"><b>4.8★</b><span>Avg. rating</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="featured">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><span class="kicker">Don't miss</span><h2>Featured this week</h2></div>
+    </div>
+    <div class="featured reveal">
+      <div class="fc">🎤<span class="tag">Selling fast</span></div>
+      <div class="fb">
+        <div class="type" style="font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--coral);margin-bottom:8px">Concert · Live music</div>
+        <h3>Neon Nights: Indie Festival</h3>
+        <p>Three stages, twelve bands and a rooftop afterparty. The city's biggest independent music night of the year.</p>
+        <div class="info">
+          <div>📅 <span>Sat, Oct 18 · 7:00 PM</span></div>
+          <div>📍 <span>Riverside Amphitheatre</span></div>
+          <div>🎟️ <span>From $35 · 1,240 attending</span></div>
+        </div>
+        <button class="btn btn-coral" onclick="alert('Ticket booking is a demo action.')">Get tickets →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="events">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><span class="kicker">Browse</span><h2>Events near you</h2></div>
+      <p id="resultCount">Showing 9 of 9 events</p>
+    </div>
+    <div class="cats" id="cats">
+      <button class="cat active" data-cat="all" onclick="setCat(this)">✦ All</button>
+      <button class="cat" data-cat="Workshop" onclick="setCat(this)">🎨 Workshops</button>
+      <button class="cat" data-cat="College" onclick="setCat(this)">🎓 College</button>
+      <button class="cat" data-cat="Concert" onclick="setCat(this)">🎵 Concerts</button>
+      <button class="cat" data-cat="Meetup" onclick="setCat(this)">☕ Meetups</button>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<section id="host">
+  <div class="wrap">
+    <div class="cta reveal">
+      <h2>Hosting something great?</h2>
+      <p>List your event on Gatherly and reach thousands of people looking for exactly what you're creating.</p>
+      <button class="btn" onclick="alert('Event creation is a demo action.')">Create your event →</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div><h4>Gatherly</h4><p>Discover workshops, college events, concerts and meetups near you — and never miss out again.</p></div>
+      <div><h4 style="font-size:1rem">Explore</h4><a href="#events">All events</a><a href="#featured">Featured</a><a href="#host">Host an event</a></div>
+      <div><h4 style="font-size:1rem">Company</h4><a href="#">About</a><a href="#">For organisers</a><a href="#">Contact</a></div>
+    </div>
+    <div class="foot-bottom">© 2026 Gatherly. A demo concept site. All events are sample content.</div>
+  </div>
+</footer>
+
+<script>
+const events = [
+  {title:"Watercolour for Beginners",type:"Workshop",icon:"🎨",bg:"linear-gradient(160deg,#ffe0e0,#ffc9c9)",day:"14",mon:"Oct",price:"$25",venue:"The Art Loft",time:"6:30 PM",desc:"A relaxed two-hour class covering washes, blending and composition. All materials provided.",attend:42,rating:4.9,avs:["#ff5a5f","#ffb400","#00a699"]},
+  {title:"Campus Tech Hackathon",type:"College",icon:"💻",bg:"linear-gradient(160deg,#dbeafe,#bfdbfe)",day:"16",mon:"Oct",price:"Free",venue:"University Hall B",time:"9:00 AM",desc:"24 hours, 40 teams, real prizes. Build something wild with mentors from local startups.",attend:180,rating:4.8,avs:["#3b82f6","#7b2d8e","#00a699"]},
+  {title:"Acoustic Sunset Session",type:"Concert",icon:"🎸",bg:"linear-gradient(160deg,#fef3c7,#fde68a)",day:"18",mon:"Oct",price:"$18",venue:"Rooftop 22",time:"7:30 PM",desc:"Intimate acoustic sets from three local artists as the sun goes down over the city.",attend:96,rating:4.9,avs:["#ffb400","#ff5a5f","#7b2d8e"]},
+  {title:"Founders & Coffee",type:"Meetup",icon:"☕",bg:"linear-gradient(160deg,#e0f2f1,#b2dfdb)",day:"19",mon:"Oct",price:"Free",venue:"Brew & Co",time:"8:00 AM",desc:"Casual morning meetup for founders, freelancers and anyone building something. No pitches, just people.",attend:34,rating:4.7,avs:["#00a699","#ff5a5f","#3b82f6"]},
+  {title:"Pottery Wheel Workshop",type:"Workshop",icon:"🏺",bg:"linear-gradient(160deg,#f3e8ff,#e9d5ff)",day:"20",mon:"Oct",price:"$45",venue:"Clay Studio",time:"5:00 PM",desc:"Get your hands dirty and throw your first bowl on the wheel. Beginners very welcome.",attend:18,rating:5.0,avs:["#7b2d8e","#ffb400","#00a699"]},
+  {title:"Film Society Screening",type:"College",icon:"🎬",bg:"linear-gradient(160deg,#fee2e2,#fecaca)",day:"21",mon:"Oct",price:"$8",venue:"Auditorium 3",time:"7:00 PM",desc:"A restored classic on the big screen, followed by a discussion with the film department.",attend:120,rating:4.6,avs:["#ff5a5f","#3b82f6","#7b2d8e"]},
+  {title:"Indie Game Night",type:"Meetup",icon:"🎮",bg:"linear-gradient(160deg,#dbeafe,#c7d2fe)",day:"22",mon:"Oct",price:"$12",venue:"Arcade Bar",time:"8:00 PM",desc:"Play unreleased indie games, meet the developers and vote for your favourite of the night.",attend:76,rating:4.8,avs:["#3b82f6","#00a699","#ffb400"]},
+  {title:"Jazz Under the Stars",type:"Concert",icon:"🎷",bg:"linear-gradient(160deg,#fef9c3,#fef08a)",day:"24",mon:"Oct",price:"$28",venue:"Botanical Gardens",time:"8:30 PM",desc:"A quintet, a lawn, and a sky full of stars. Bring a blanket and something to sip.",attend:210,rating:4.9,avs:["#ffb400","#7b2d8e","#ff5a5f"]},
+  {title:"Public Speaking Bootcamp",type:"Workshop",icon:"🎤",bg:"linear-gradient(160deg,#e0f2f1,#ccfbf1)",day:"26",mon:"Oct",price:"$35",venue:"Hub Coworking",time:"10:00 AM",desc:"A hands-on half-day to beat stage fright, structure your story and speak with confidence.",attend:28,rating:4.8,avs:["#00a699","#ff5a5f","#3b82f6"]}
+];
+
+let activeCat = 'all';
+function renderEvents(list){
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  if(!list.length){ grid.innerHTML = '<p style="opacity:.6;grid-column:1/-1;text-align:center;padding:40px">No events match that search. Try another category.</p>'; return; }
+  list.forEach(e=>{
+    const el = document.createElement('div');
+    el.className = 'card reveal in';
+    el.onclick = ()=>alert('Event details for "'+e.title+'" (demo).');
+    el.innerHTML = `
+      <div class="cover" style="background:${e.bg}">${e.icon}
+        <div class="date"><b>${e.day}</b><span>${e.mon}</span></div>
+        <div class="price-tag">${e.price}</div>
+      </div>
+      <div class="body">
+        <div class="type">${e.type}</div>
+        <h3>${e.title}</h3>
+        <p class="desc">${e.desc}</p>
+        <div class="meta"><span>📍 ${e.venue}</span><span>🕐 ${e.time}</span></div>
+        <div class="foot">
+          <div class="attendees">
+            <div class="avs">${e.avs.map((c,i)=>`<i style="background:${c}">${String.fromCharCode(65+i)}</i>`).join('')}</div>
+            ${e.attend} going
+          </div>
+          <span style="font-weight:800;color:var(--sun)">★ ${e.rating}</span>
+        </div>
+      </div>`;
+    grid.appendChild(el);
+  });
+  document.getElementById('resultCount').textContent = 'Showing '+list.length+' of '+events.length+' events';
+}
+function filterEvents(){
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const cat = document.getElementById('searchCat').value;
+  const list = events.filter(e=>{
+    const catOk = (cat==='all'||e.type===cat) && (activeCat==='all'||e.type===activeCat);
+    const qOk = !q || (e.title+e.desc+e.venue+e.type).toLowerCase().includes(q);
+    return catOk && qOk;
+  });
+  renderEvents(list);
+}
+function setCat(el){
+  document.querySelectorAll('.cat').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  activeCat = el.dataset.cat;
+  document.getElementById('searchCat').value = activeCat;
+  filterEvents();
+}
+function quickSearch(cat){
+  activeCat = cat;
+  document.querySelectorAll('.cat').forEach(c=>c.classList.toggle('active', c.dataset.cat===cat));
+  document.getElementById('searchCat').value = cat;
+  document.getElementById('searchInput').value = '';
+  filterEvents();
+  document.getElementById('events').scrollIntoView();
+}
+
+renderEvents(events);
+const io = new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

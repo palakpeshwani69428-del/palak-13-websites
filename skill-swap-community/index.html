@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swaply — Skill-Swap Community</title>
+<style>
+  :root{
+    --bg:#f2f7f4;
+    --ink:#12261c;
+    --muted:#5f7a6c;
+    --line:rgba(18,38,28,.1);
+    --green:#16a34a;
+    --green-dk:#15803d;
+    --mint:#bbf7d0;
+    --amber:#f59e0b;
+    --blue:#2563eb;
+    --radius:20px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;overflow-x:hidden}
+  h1,h2,h3{font-family:"Segoe UI",system-ui,sans-serif;letter-spacing:-.03em;font-weight:800}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+  a{color:inherit;text-decoration:none}
+
+  header.nav{position:sticky;top:0;z-index:60;background:rgba(242,247,244,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:70px;gap:20px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.2rem}
+  .logo .mark{width:36px;height:36px;border-radius:12px;background:var(--green);color:#fff;display:grid;place-items:center;font-size:1.1rem}
+  .nav-links{display:flex;gap:24px;font-size:.92rem;font-weight:600}
+  .nav-links a{color:var(--muted);transition:.2s}
+  .nav-links a:hover{color:var(--ink)}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:12px;font-weight:700;font-size:.9rem;border:none;cursor:pointer;transition:transform .18s,box-shadow .18s;font-family:inherit}
+  .btn-green{background:var(--green);color:#fff}
+  .btn-green:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(22,163,74,.35)}
+  .btn-ghost{background:#fff;border:1.5px solid var(--line);color:var(--ink)}
+  .btn-ghost:hover{background:#eaf3ee}
+
+  .hero{padding:70px 0 50px;position:relative;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:0;background:radial-gradient(600px 400px at 88% 5%,rgba(187,247,208,.6),transparent 65%),radial-gradient(500px 400px at 5% 95%,rgba(37,99,235,.1),transparent 70%);z-index:-1}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:50px;align-items:center}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:.78rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:22px;color:var(--green-dk)}
+  .hero h1{font-size:clamp(2.2rem,4.8vw,3.4rem);line-height:1.08;margin-bottom:18px}
+  .hero h1 span{color:var(--green-dk)}
+  .hero p{color:var(--muted);font-size:1.08rem;max-width:520px;margin-bottom:28px}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:30px}
+  .hero-stats{display:flex;gap:30px;flex-wrap:wrap}
+  .hero-stats .s b{display:block;font-size:1.5rem;color:var(--green-dk)}
+  .hero-stats .s span{font-size:.8rem;color:var(--muted);font-weight:600}
+
+  .glass{background:rgba(255,255,255,.7);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.9);border-radius:var(--radius);box-shadow:0 20px 50px rgba(18,38,28,.1)}
+  .swap-card{padding:26px}
+  .swap-card h3{font-size:1.05rem;margin-bottom:16px}
+  .swap-row{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;background:#fff;margin-bottom:10px;transition:transform .2s}
+  .swap-row:hover{transform:translateX(4px)}
+  .swap-row .av{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-weight:800;font-size:.85rem;color:#fff;flex-shrink:0}
+  .swap-row .t{font-weight:700;font-size:.88rem}
+  .swap-row .m{font-size:.74rem;color:var(--muted)}
+  .swap-row .arrow{margin-left:auto;color:var(--green);font-weight:800;font-size:1.1rem}
+
+  section{padding:64px 0}
+  .sec-head{text-align:center;max-width:640px;margin:0 auto 42px}
+  .sec-head h2{font-size:clamp(1.8rem,3.6vw,2.4rem);margin-bottom:12px}
+  .sec-head p{color:var(--muted)}
+  .kicker{font-size:.76rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--green-dk);display:block;margin-bottom:10px}
+
+  /* HOW */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .step{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:28px}
+  .step .num{font-size:2.4rem;font-weight:800;color:var(--mint);line-height:1}
+  .step h3{margin:12px 0 8px;font-size:1.1rem}
+  .step p{font-size:.9rem;color:var(--muted)}
+
+  /* SWAP MATCHER */
+  .matcher{display:grid;grid-template-columns:1fr 1fr;gap:34px;align-items:start}
+  .panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:28px}
+  .panel h3{font-size:1.15rem;margin-bottom:6px}
+  .panel .sub{font-size:.85rem;color:var(--muted);margin-bottom:20px}
+  .panel label{display:block;font-size:.8rem;font-weight:700;margin:14px 0 6px}
+  .panel input,.panel select{width:100%;padding:11px 13px;border-radius:10px;border:1.5px solid var(--line);font-family:inherit;font-size:.9rem;background:var(--bg)}
+  .panel input:focus,.panel select:focus{outline:none;border-color:var(--green);background:#fff}
+  .match-out{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:28px;min-height:340px}
+  .match-item{display:flex;gap:14px;align-items:center;padding:14px;border-radius:14px;background:var(--bg);margin-bottom:12px;animation:fadeUp .4s both}
+  .match-item .av{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;font-weight:800;color:#fff;flex-shrink:0}
+  .match-item .t{font-weight:700;font-size:.92rem}
+  .match-item .m{font-size:.78rem;color:var(--muted)}
+  .match-item .pct{margin-left:auto;font-weight:800;color:var(--green-dk)}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  /* MEMBERS */
+  .filters{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:34px}
+  .f{padding:9px 18px;border-radius:999px;background:#fff;border:1.5px solid var(--line);font-weight:700;font-size:.85rem;cursor:pointer;transition:.2s;font-family:inherit;color:var(--ink)}
+  .f.active{background:var(--green);color:#fff;border-color:var(--green)}
+  .f:hover:not(.active){border-color:var(--green)}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;transition:transform .25s,box-shadow .25s;display:flex;flex-direction:column}
+  .card:hover{transform:translateY(-6px);box-shadow:0 20px 44px rgba(18,38,28,.12)}
+  .card .head{display:flex;gap:14px;align-items:center;margin-bottom:14px}
+  .card .av{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-weight:800;font-size:1.05rem;color:#fff;flex-shrink:0}
+  .card .name{font-weight:800;font-size:1rem}
+  .card .loc{font-size:.78rem;color:var(--muted)}
+  .card .bio{font-size:.85rem;color:var(--muted);margin-bottom:14px;flex:1}
+  .swap-tags{display:grid;gap:8px;margin-bottom:16px}
+  .swap-tag{display:flex;align-items:center;gap:8px;font-size:.8rem;font-weight:600}
+  .swap-tag .lbl{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:3px 8px;border-radius:6px}
+  .swap-tag .offer{background:rgba(22,163,74,.12);color:var(--green-dk)}
+  .swap-tag .want{background:rgba(37,99,235,.12);color:var(--blue)}
+  .card .foot{display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid var(--line)}
+  .card .rating{font-size:.8rem;font-weight:700;color:var(--amber)}
+  .swap-btn{background:var(--green);color:#fff;border:none;border-radius:10px;padding:8px 14px;font-weight:700;font-size:.82rem;cursor:pointer;transition:.2s;font-family:inherit}
+  .swap-btn:hover{background:var(--green-dk)}
+  .swap-btn.sent{background:var(--amber)}
+
+  /* STATS */
+  .stats-band{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;background:var(--green);color:#fff;border-radius:28px;padding:40px}
+  .stats-band .s{text-align:center}
+  .stats-band .s b{display:block;font-size:2rem;font-weight:800}
+  .stats-band .s span{font-size:.82rem;opacity:.85;font-weight:600}
+
+  footer{background:var(--ink);color:#fff;padding:50px 0 30px;margin-top:30px}
+  .foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;margin-bottom:34px}
+  footer h4{font-size:1.1rem;margin-bottom:12px}
+  footer p,footer a{opacity:.6;font-size:.88rem}
+  footer a{display:block;margin-bottom:8px;transition:.2s}
+  footer a:hover{opacity:1}
+  .foot-bottom{border-top:1px solid rgba(255,255,255,.12);padding-top:22px;font-size:.8rem;opacity:.5;text-align:center}
+
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s}
+  .reveal.in{opacity:1;transform:none}
+
+  @media(max-width:960px){
+    .hero-grid,.grid,.steps,.matcher,.stats-band{grid-template-columns:1fr 1fr}
+    .nav-links{display:none}
+    .foot-grid{grid-template-columns:1fr}
+  }
+  @media(max-width:620px){ .grid,.steps,.matcher,.stats-band{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="logo"><span class="mark">⇄</span> Swaply</div>
+    <nav class="nav-links">
+      <a href="#matcher">Find a swap</a>
+      <a href="#members">Members</a>
+      <a href="#how">How it works</a>
+    </nav>
+    <button class="btn btn-green" onclick="document.getElementById('matcher').scrollIntoView()">Join free</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="pill">✦ No money, just skills</span>
+      <h1>Trade what you know for what you <span>want to learn</span>.</h1>
+      <p>Teach coding, get design help. Offer guitar lessons, learn Spanish. Swaply matches people whose skills complement each other — no cash required.</p>
+      <div class="hero-cta">
+        <button class="btn btn-green" onclick="document.getElementById('matcher').scrollIntoView()">Find my match →</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('members').scrollIntoView()">Browse members</button>
+      </div>
+      <div class="hero-stats">
+        <div class="s"><b>48k</b><span>Members</span></div>
+        <div class="s"><b>21k</b><span>Swaps completed</span></div>
+        <div class="s"><b>4.9★</b><span>Swap rating</span></div>
+      </div>
+    </div>
+    <div class="glass swap-card">
+      <h3>🔄 Recent swaps happening now</h3>
+      <div class="swap-row"><div class="av" style="background:#16a34a">AR</div><div><div class="t">Ana → Leo</div><div class="m">Spanish lessons for guitar</div></div><div class="arrow">⇄</div></div>
+      <div class="swap-row"><div class="av" style="background:#2563eb">MK</div><div><div class="t">Maya → Sam</div><div class="m">Figma design for Python</div></div><div class="arrow">⇄</div></div>
+      <div class="swap-row"><div class="av" style="background:#f59e0b">JT</div><div><div class="t">Jonah → Riya</div><div class="m">Music production for video editing</div></div><div class="arrow">⇄</div></div>
+      <div class="swap-row"><div class="av" style="background:#7b2d8e">DL</div><div><div class="t">Diego → Nina</div><div class="m">Photography for copywriting</div></div><div class="arrow">⇄</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">Simple &amp; fair</span>
+      <h2>How skill-swapping works</h2>
+    </div>
+    <div class="steps">
+      <div class="step reveal"><div class="num">01</div><h3>List your skills</h3><p>Add what you can teach and what you want to learn. Be specific — "React basics" beats "coding".</p></div>
+      <div class="step reveal"><div class="num">02</div><h3>Get matched</h3><p>Our matcher pairs you with people whose offers line up with your wants — a true two-way swap.</p></div>
+      <div class="step reveal"><div class="num">03</div><h3>Swap &amp; grow</h3><p>Agree on a schedule, meet online or nearby, and both walk away with a new skill. No money changes hands.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="matcher" style="background:linear-gradient(180deg,transparent,rgba(187,247,208,.4),transparent)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">Try the matcher</span>
+      <h2>Find your perfect swap</h2>
+      <p>Tell us what you can offer and what you want — we'll find the best matches.</p>
+    </div>
+    <div class="matcher">
+      <div class="panel reveal">
+        <h3>Your skills</h3>
+        <p class="sub">This is a live demo — nothing is stored.</p>
+        <label>I can teach…</label>
+        <select id="mOffer">
+          <option>Coding</option><option>Design</option><option>Guitar</option><option>Spanish</option>
+          <option>Photography</option><option>Writing</option><option>Music Production</option><option>Yoga</option>
+        </select>
+        <label>I want to learn…</label>
+        <select id="mWant">
+          <option>Design</option><option>Coding</option><option>Guitar</option><option>Spanish</option>
+          <option>Photography</option><option>Writing</option><option>Music Production</option><option>Yoga</option>
+        </select>
+        <label>Preferred format</label>
+        <select id="mFormat"><option>Online</option><option>In person</option><option>Either</option></select>
+        <button class="btn btn-green" style="width:100%;justify-content:center;margin-top:20px" onclick="findMatches()">Find my matches →</button>
+      </div>
+      <div class="match-out reveal" id="matchOut">
+        <p style="color:var(--muted);font-size:.9rem">Choose your skills and hit find to see your best swap matches.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="members">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">Community</span>
+      <h2>Members open to swapping</h2>
+    </div>
+    <div class="filters" id="filters">
+      <button class="f active" data-cat="all" onclick="setFilter(this)">All members</button>
+      <button class="f" data-cat="Coding" onclick="setFilter(this)">Coding</button>
+      <button class="f" data-cat="Design" onclick="setFilter(this)">Design</button>
+      <button class="f" data-cat="Music" onclick="setFilter(this)">Music</button>
+      <button class="f" data-cat="Languages" onclick="setFilter(this)">Languages</button>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="stats-band reveal">
+      <div class="s"><b>48k</b><span>Active members</span></div>
+      <div class="s"><b>21k</b><span>Swaps completed</span></div>
+      <div class="s"><b>140+</b><span>Skills listed</span></div>
+      <div class="s"><b>$0</b><span>Ever paid</span></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div><h4>Swaply</h4><p>The skill-swap community where people trade what they know for what they want to learn. No money, just growth.</p></div>
+      <div><h4 style="font-size:1rem">Explore</h4><a href="#matcher">Find a swap</a><a href="#members">Members</a><a href="#how">How it works</a></div>
+      <div><h4 style="font-size:1rem">Community</h4><a href="#">Guidelines</a><a href="#">Safety</a><a href="#">Contact</a></div>
+    </div>
+    <div class="foot-bottom">© 2026 Swaply. A demo concept site. All members and swaps are sample content.</div>
+  </div>
+</footer>
+
+<script>
+const members = [
+  {name:"Ana Rivera",loc:"Barcelona · Online",cat:"Languages",bio:"Native Spanish speaker and language teacher. I want to finally learn guitar.",offer:"Spanish",want:"Guitar",rating:4.9,color:"#16a34a"},
+  {name:"Maya Kim",loc:"Seoul · Online",cat:"Design",bio:"Product designer with 6 years in Figma. Looking to learn Python for design tooling.",offer:"Design",want:"Coding",rating:5.0,color:"#2563eb"},
+  {name:"Jonah Torres",loc:"Austin · In person",cat:"Music",bio:"Music producer and mixing engineer. Want to learn video editing for my channel.",offer:"Music Production",want:"Video Editing",rating:4.8,color:"#f59e0b"},
+  {name:"Diego Lopez",loc:"Mexico City · Either",cat:"Design",bio:"Photographer specialising in portraits. I'd love to improve my copywriting.",offer:"Photography",want:"Writing",rating:4.7,color:"#7b2d8e"},
+  {name:"Sam Okafor",loc:"Lagos · Online",cat:"Coding",bio:"Full-stack developer. I can teach React and Node — want to learn UI design.",offer:"Coding",want:"Design",rating:4.9,color:"#16a34a"},
+  {name:"Riya Sharma",loc:"Mumbai · Online",cat:"Design",bio:"Motion designer. I want to learn music production to score my own animations.",offer:"Design",want:"Music Production",rating:4.8,color:"#2563eb"},
+  {name:"Leo Novak",loc:"Prague · In person",cat:"Music",bio:"Session guitarist, 15 years playing. Want to learn Spanish before I travel.",offer:"Guitar",want:"Spanish",rating:4.9,color:"#f59e0b"},
+  {name:"Nina Petrova",loc:"Sofia · Online",cat:"Languages",bio:"Copywriter and content strategist. I want to learn photography for my blog.",offer:"Writing",want:"Photography",rating:4.8,color:"#7b2d8e"},
+  {name:"Kai Nakamura",loc:"Tokyo · Either",cat:"Coding",bio:"Data engineer. I can teach Python and SQL — want to learn yoga for balance.",offer:"Coding",want:"Yoga",rating:4.7,color:"#16a34a"}
+];
+
+let activeCat = 'all';
+function initials(n){ return n.split(' ').map(w=>w[0]).join('').slice(0,2); }
+function renderMembers(){
+  const grid = document.getElementById('grid');
+  const list = members.filter(m=>activeCat==='all'||m.cat===activeCat);
+  grid.innerHTML = '';
+  list.forEach(m=>{
+    const el = document.createElement('div');
+    el.className = 'card reveal in';
+    el.innerHTML = `
+      <div class="head">
+        <div class="av" style="background:${m.color}">${initials(m.name)}</div>
+        <div><div class="name">${m.name}</div><div class="loc">${m.loc}</div></div>
+      </div>
+      <p class="bio">${m.bio}</p>
+      <div class="swap-tags">
+        <div class="swap-tag"><span class="lbl offer">Offers</span>${m.offer}</div>
+        <div class="swap-tag"><span class="lbl want">Wants</span>${m.want}</div>
+      </div>
+      <div class="foot">
+        <span class="rating">★ ${m.rating}</span>
+        <button class="swap-btn" onclick="requestSwap(this)">Request swap</button>
+      </div>`;
+    grid.appendChild(el);
+  });
+}
+function setFilter(el){
+  document.querySelectorAll('.f').forEach(f=>f.classList.remove('active'));
+  el.classList.add('active');
+  activeCat = el.dataset.cat;
+  renderMembers();
+}
+function requestSwap(btn){
+  btn.textContent = 'Request sent ✓';
+  btn.classList.add('sent');
+}
+
+function findMatches(){
+  const offer = document.getElementById('mOffer').value;
+  const want = document.getElementById('mWant').value;
+  const out = document.getElementById('matchOut');
+  if(offer === want){
+    out.innerHTML = '<p style="color:var(--muted);font-size:.9rem">Pick two different skills — you can\'t swap a skill for itself! 😄</p>';
+    return;
+  }
+  const scored = members.map(m=>{
+    let score = 40;
+    if(m.offer === want) score += 35;
+    if(m.want === offer) score += 25;
+    if(m.offer === want && m.want === offer) score = 98;
+    return {...m, score: Math.min(score, 98)};
+  }).sort((a,b)=>b.score-a.score).slice(0,4);
+  out.innerHTML = '<p style="font-size:.85rem;color:var(--muted);margin-bottom:16px">Best matches for <b style="color:var(--green-dk)">'+offer+'</b> ⇄ <b style="color:var(--blue)">'+want+'</b></p>' +
+    scored.map(m=>`
+      <div class="match-item">
+        <div class="av" style="background:${m.color}">${initials(m.name)}</div>
+        <div><div class="t">${m.name}</div><div class="m">Offers ${m.offer} · wants ${m.want}</div></div>
+        <div class="pct">${m.score}%</div>
+      </div>`).join('');
+}
+
+renderMembers();
+const io = new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

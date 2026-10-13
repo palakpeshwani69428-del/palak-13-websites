@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mirrorly — Virtual Try-On Store</title>
+<style>
+  :root{
+    --bg:#fdf9f6;
+    --ink:#2b1d2a;
+    --muted:#8a7a86;
+    --line:rgba(43,29,42,.1);
+    --rose:#e05780;
+    --rose-dk:#b23a5e;
+    --plum:#5b2a4e;
+    --cream:#fff;
+    --sand:#f3e9e2;
+    --radius:20px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;overflow-x:hidden}
+  h1,h2,h3{font-family:"Didot","Bodoni MT",Georgia,serif;letter-spacing:-.01em;font-weight:700}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 22px}
+  a{color:inherit;text-decoration:none}
+
+  header.nav{position:sticky;top:0;z-index:60;background:rgba(253,249,246,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:70px;gap:20px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.25rem;font-family:"Didot",Georgia,serif}
+  .logo .mark{width:36px;height:36px;border-radius:50%;background:var(--plum);color:var(--rose);display:grid;place-items:center;font-size:1.1rem}
+  .nav-links{display:flex;gap:24px;font-size:.92rem;font-weight:600}
+  .nav-links a{color:var(--muted);transition:.2s}
+  .nav-links a:hover{color:var(--ink)}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:999px;font-weight:700;font-size:.9rem;border:none;cursor:pointer;transition:transform .18s,box-shadow .18s;font-family:inherit}
+  .btn-rose{background:var(--rose);color:#fff}
+  .btn-rose:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(224,87,128,.35)}
+  .btn-plum{background:var(--plum);color:#fff}
+  .btn-plum:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(91,42,78,.3)}
+  .btn-ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+  .btn-ghost:hover{background:rgba(43,29,42,.05)}
+
+  .hero{padding:70px 0 50px;position:relative;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:0;background:radial-gradient(600px 400px at 85% 5%,rgba(224,87,128,.16),transparent 65%),radial-gradient(500px 400px at 5% 95%,rgba(91,42,78,.1),transparent 70%);z-index:-1}
+  .hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:center}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:.78rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:22px;color:var(--rose-dk)}
+  .hero h1{font-size:clamp(2.2rem,4.8vw,3.4rem);line-height:1.08;margin-bottom:18px}
+  .hero h1 span{color:var(--rose)}
+  .hero p{color:var(--muted);font-size:1.08rem;max-width:520px;margin-bottom:28px}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:30px}
+  .hero-stats{display:flex;gap:30px;flex-wrap:wrap}
+  .hero-stats .s b{display:block;font-size:1.5rem;font-family:"Didot",Georgia,serif;color:var(--plum)}
+  .hero-stats .s span{font-size:.8rem;color:var(--muted);font-weight:600}
+
+  /* TRY-ON STUDIO */
+  .studio{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 24px 60px rgba(91,42,78,.12);padding:24px}
+  .studio h3{font-size:1.1rem;margin-bottom:4px}
+  .studio .sub{font-size:.82rem;color:var(--muted);margin-bottom:18px}
+  .stage{position:relative;height:340px;border-radius:16px;background:linear-gradient(160deg,var(--sand),#faf3ee);display:grid;place-items:center;overflow:hidden;margin-bottom:18px}
+  .model{position:relative;width:150px;height:280px;transition:transform .4s}
+  .model .head{width:64px;height:64px;border-radius:50%;background:#e8c9b8;margin:0 auto;position:relative;z-index:3}
+  .model .hair{position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:78px;height:70px;border-radius:50% 50% 40% 40%;background:#3a2a24;z-index:2;transition:.4s}
+  .model .body{width:110px;height:150px;border-radius:40px 40px 20px 20px;background:var(--plum);margin:-8px auto 0;position:relative;z-index:1;transition:background .4s}
+  .model .legs{width:90px;height:80px;margin:0 auto;display:flex;gap:8px;justify-content:center}
+  .model .legs i{flex:1;background:#2b1d2a;border-radius:0 0 12px 12px}
+  .model .glasses{position:absolute;top:26px;left:50%;transform:translateX(-50%);width:70px;height:22px;z-index:4;display:none}
+  .model .glasses i{position:absolute;top:0;width:30px;height:22px;border:3px solid #2b1d2a;border-radius:8px;background:rgba(255,255,255,.25)}
+  .model .glasses i:first-child{left:0}
+  .model .glasses i:last-child{right:0}
+  .model .glasses::after{content:"";position:absolute;top:10px;left:30px;width:10px;height:3px;background:#2b1d2a}
+  .stage .label{position:absolute;bottom:14px;left:14px;background:rgba(255,255,255,.85);backdrop-filter:blur(8px);border-radius:999px;padding:6px 14px;font-size:.76rem;font-weight:700;color:var(--plum)}
+  .swatches{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+  .swatch{width:38px;height:38px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:.2s}
+  .swatch.active{border-color:var(--plum);transform:scale(1.1)}
+  .tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+  .tab{padding:8px 16px;border-radius:999px;background:var(--sand);border:none;font-weight:700;font-size:.82rem;cursor:pointer;font-family:inherit;color:var(--ink);transition:.2s}
+  .tab.active{background:var(--plum);color:#fff}
+  .studio-actions{display:flex;gap:10px;flex-wrap:wrap}
+
+  section{padding:64px 0}
+  .sec-head{text-align:center;max-width:640px;margin:0 auto 42px}
+  .sec-head h2{font-size:clamp(1.8rem,3.6vw,2.4rem);margin-bottom:12px}
+  .sec-head p{color:var(--muted)}
+  .kicker{font-size:.76rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--rose-dk);display:block;margin-bottom:10px}
+
+  /* CATEGORIES */
+  .cats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .cat{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:26px;text-align:center;transition:transform .25s,box-shadow .25s;cursor:pointer}
+  .cat:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(91,42,78,.1)}
+  .cat .ic{font-size:2.2rem;margin-bottom:12px}
+  .cat h3{font-size:1.05rem;margin-bottom:6px}
+  .cat p{font-size:.82rem;color:var(--muted)}
+
+  /* PRODUCTS */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .prod{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:transform .25s,box-shadow .25s;display:flex;flex-direction:column}
+  .prod:hover{transform:translateY(-6px);box-shadow:0 20px 44px rgba(91,42,78,.12)}
+  .prod .cover{height:180px;display:grid;place-items:center;font-size:3.4rem;position:relative}
+  .prod .tryon{position:absolute;bottom:12px;right:12px;background:rgba(255,255,255,.9);backdrop-filter:blur(8px);border:none;border-radius:999px;padding:7px 14px;font-size:.76rem;font-weight:800;cursor:pointer;color:var(--plum);font-family:inherit;transition:.2s}
+  .prod .tryon:hover{background:var(--plum);color:#fff}
+  .prod .body{padding:20px;flex:1;display:flex;flex-direction:column}
+  .prod .brand{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--rose-dk);margin-bottom:6px}
+  .prod h3{font-size:1.05rem;margin-bottom:8px}
+  .prod .desc{font-size:.85rem;color:var(--muted);margin-bottom:14px;flex:1}
+  .prod .foot{display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid var(--line)}
+  .prod .price{font-weight:800;font-size:1.1rem;color:var(--plum)}
+  .prod .price s{font-size:.8rem;color:var(--muted);font-weight:600;margin-left:6px}
+
+  /* HOW */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .step{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:28px}
+  .step .num{font-size:2.4rem;font-family:"Didot",Georgia,serif;font-weight:800;color:var(--sand);line-height:1}
+  .step h3{margin:12px 0 8px;font-size:1.1rem}
+  .step p{font-size:.9rem;color:var(--muted)}
+
+  footer{background:var(--plum);color:#fff;padding:50px 0 30px;margin-top:30px}
+  .foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;margin-bottom:34px}
+  footer h4{font-size:1.15rem;margin-bottom:12px;font-family:"Didot",Georgia,serif}
+  footer p,footer a{opacity:.65;font-size:.88rem}
+  footer a{display:block;margin-bottom:8px;transition:.2s}
+  footer a:hover{opacity:1}
+  .foot-bottom{border-top:1px solid rgba(255,255,255,.15);padding-top:22px;font-size:.8rem;opacity:.5;text-align:center}
+
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s}
+  .reveal.in{opacity:1;transform:none}
+
+  @media(max-width:960px){
+    .hero-grid,.grid,.steps,.cats{grid-template-columns:1fr 1fr}
+    .nav-links{display:none}
+    .foot-grid{grid-template-columns:1fr}
+  }
+  @media(max-width:620px){ .grid,.steps,.cats{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="logo"><span class="mark">◐</span> Mirrorly</div>
+    <nav class="nav-links">
+      <a href="#studio">Try-on studio</a>
+      <a href="#shop">Shop</a>
+      <a href="#how">How it works</a>
+    </nav>
+    <button class="btn btn-rose" onclick="document.getElementById('studio').scrollIntoView()">Open studio</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="pill">✦ See it before you buy it</span>
+      <h1>Try on anything, <span>instantly</span>.</h1>
+      <p>Preview clothes, glasses, hairstyles and room décor on your own look — no fitting room, no guesswork, no returns.</p>
+      <div class="hero-cta">
+        <button class="btn btn-rose" onclick="document.getElementById('studio').scrollIntoView()">Start trying on →</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('shop').scrollIntoView()">Browse the shop</button>
+      </div>
+      <div class="hero-stats">
+        <div class="s"><b>1.2M</b><span>Try-ons this month</span></div>
+        <div class="s"><b>-64%</b><span>Fewer returns</span></div>
+        <div class="s"><b>4.8★</b><span>Shopper rating</span></div>
+      </div>
+    </div>
+    <div class="studio" id="studio">
+      <h3>Try-on studio</h3>
+      <p class="sub">Pick a category, then tap a colour to preview it live.</p>
+      <div class="stage">
+        <div class="model" id="model">
+          <div class="hair" id="hair"></div>
+          <div class="head"></div>
+          <div class="glasses" id="glasses"><i></i><i></i></div>
+          <div class="body" id="body"></div>
+          <div class="legs"><i></i><i></i></div>
+        </div>
+        <div class="label" id="stageLabel">Outfit · Plum</div>
+      </div>
+      <div class="tabs" id="tabs">
+        <button class="tab active" data-mode="outfit" onclick="setMode(this)">👗 Outfit</button>
+        <button class="tab" data-mode="glasses" onclick="setMode(this)">👓 Glasses</button>
+        <button class="tab" data-mode="hair" onclick="setMode(this)">💇 Hair</button>
+      </div>
+      <div class="swatches" id="swatches"></div>
+      <div class="studio-actions">
+        <button class="btn btn-plum" onclick="alert('Saved to your lookbook (demo).')">Save look</button>
+        <button class="btn btn-ghost" onclick="resetLook()">Reset</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">Four worlds</span>
+      <h2>What will you try on today?</h2>
+    </div>
+    <div class="cats">
+      <div class="cat reveal" onclick="document.getElementById('studio').scrollIntoView()"><div class="ic">👗</div><h3>Clothes</h3><p>Dresses, jackets, tops and more on your silhouette.</p></div>
+      <div class="cat reveal" onclick="document.getElementById('studio').scrollIntoView()"><div class="ic">👓</div><h3>Glasses</h3><p>Frames sized to your face, in every colour.</p></div>
+      <div class="cat reveal" onclick="document.getElementById('studio').scrollIntoView()"><div class="ic">💇</div><h3>Hairstyles</h3><p>Preview cuts and colours before the salon.</p></div>
+      <div class="cat reveal" onclick="document.getElementById('studio').scrollIntoView()"><div class="ic">🛋️</div><h3>Room décor</h3><p>Drop furniture and paint into your space.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="shop" style="background:linear-gradient(180deg,transparent,rgba(243,233,226,.7),transparent)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">Shop</span>
+      <h2>Pieces you can try on now</h2>
+      <p>Tap "Try on" on any product to preview it in the studio.</p>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">Effortless</span>
+      <h2>How virtual try-on works</h2>
+    </div>
+    <div class="steps">
+      <div class="step reveal"><div class="num">01</div><h3>Pick a piece</h3><p>Browse the shop and tap try-on, or open the studio and choose a category directly.</p></div>
+      <div class="step reveal"><div class="num">02</div><h3>See it on you</h3><p>Our model adapts the item to your proportions, skin tone and lighting in real time.</p></div>
+      <div class="step reveal"><div class="num">03</div><h3>Buy with confidence</h3><p>Know it fits before it ships — that's why our shoppers return 64% less than average.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div><h4>Mirrorly</h4><p>The virtual try-on store for clothes, glasses, hairstyles and room décor. See it before you buy it.</p></div>
+      <div><h4 style="font-size:1rem">Shop</h4><a href="#shop">All products</a><a href="#studio">Try-on studio</a><a href="#how">How it works</a></div>
+      <div><h4 style="font-size:1rem">Company</h4><a href="#">About</a><a href="#">Returns</a><a href="#">Contact</a></div>
+    </div>
+    <div class="foot-bottom">© 2026 Mirrorly. A demo concept site. All products and try-ons are sample content.</div>
+  </div>
+</footer>
+
+<script>
+const palettes = {
+  outfit: [
+    {name:"Plum",c:"#5b2a4e"},{name:"Rose",c:"#e05780"},{name:"Sage",c:"#7c9a7a"},
+    {name:"Navy",c:"#2b3a55"},{name:"Camel",c:"#c19a6b"},{name:"Black",c:"#2b1d2a"}
+  ],
+  glasses: [
+    {name:"Tortoise",c:"#8b5a2b"},{name:"Black",c:"#2b1d2a"},{name:"Rose Gold",c:"#e0a3a3"},
+    {name:"Clear",c:"#d9d4d0"},{name:"Navy",c:"#2b3a55"}
+  ],
+  hair: [
+    {name:"Espresso",c:"#3a2a24"},{name:"Honey",c:"#c99a5b"},{name:"Auburn",c:"#8b3a2b"},
+    {name:"Platinum",c:"#e6dccb"},{name:"Rose",c:"#c96b7a"},{name:"Midnight",c:"#1c1c2b"}
+  ]
+};
+let mode = 'outfit';
+let current = {outfit:"#5b2a4e", glasses:"#2b1d2a", hair:"#3a2a24"};
+
+function renderSwatches(){
+  const box = document.getElementById('swatches');
+  box.innerHTML = palettes[mode].map(p=>{
+    const active = current[mode] === p.c ? 'active' : '';
+    return `<div class="swatch ${active}" style="background:${p.c}" title="${p.name}" onclick="applyColor('${p.c}','${p.name}')"></div>`;
+  }).join('');
+}
+function applyColor(c,name){
+  current[mode] = c;
+  if(mode==='outfit'){ document.getElementById('body').style.background = c; }
+  if(mode==='hair'){ document.getElementById('hair').style.background = c; }
+  if(mode==='glasses'){
+    document.querySelectorAll('#glasses i').forEach(i=>{ i.style.borderColor = c; });
+  }
+  document.getElementById('stageLabel').textContent = mode.charAt(0).toUpperCase()+mode.slice(1)+' · '+name;
+  renderSwatches();
+}
+function setMode(el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  mode = el.dataset.mode;
+  document.getElementById('glasses').style.display = (mode==='glasses') ? 'block' : 'none';
+  renderSwatches();
+}
+function resetLook(){
+  current = {outfit:"#5b2a4e", glasses:"#2b1d2a", hair:"#3a2a24"};
+  document.getElementById('body').style.background = current.outfit;
+  document.getElementById('hair').style.background = current.hair;
+  document.querySelectorAll('#glasses i').forEach(i=>{ i.style.borderColor = current.glasses; });
+  document.getElementById('stageLabel').textContent = 'Outfit · Plum';
+  renderSwatches();
+}
+
+const products = [
+  {name:"Silk Wrap Dress",brand:"Maison Lune",icon:"👗",bg:"linear-gradient(160deg,#f3e9e2,#e8d5cc)",price:189,was:240,desc:"Fluid silk wrap with a flattering V-neck. Available in six colours."},
+  {name:"Oversized Wool Coat",brand:"Nord & Co",icon:"🧥",bg:"linear-gradient(160deg,#e8e2dc,#d5cbc2)",price:320,was:420,desc:"Structured wool-blend coat that layers over everything."},
+  {name:"Round Acetate Frames",brand:"Optic Studio",icon:"👓",bg:"linear-gradient(160deg,#f0e6e0,#e0d0c8)",price:145,was:180,desc:"Lightweight round frames with blue-light lenses."},
+  {name:"Linen Wide-Leg Trousers",brand:"Field Notes",icon:"👖",bg:"linear-gradient(160deg,#eef0e8,#dde2d5)",price:98,was:130,desc:"Breathable linen trousers with a relaxed drape."},
+  {name:"Cashmere Knit Sweater",brand:"Aurelle",icon:"🧶",bg:"linear-gradient(160deg,#f5ece6,#e8d8ce)",price:210,was:280,desc:"Ultra-soft cashmere in a relaxed crew neck."},
+  {name:"Leather Tote Bag",brand:"Corso",icon:"👜",bg:"linear-gradient(160deg,#efe4da,#ddc9b8)",price:265,was:340,desc:"Full-grain leather tote that ages beautifully."}
+];
+function renderProducts(){
+  document.getElementById('grid').innerHTML = products.map(p=>`
+    <div class="prod reveal in">
+      <div class="cover" style="background:${p.bg}">${p.icon}
+        <button class="tryon" onclick="tryProduct('${p.name}')">Try on</button>
+      </div>
+      <div class="body">
+        <div class="brand">${p.brand}</div>
+        <h3>${p.name}</h3>
+        <p class="desc">${p.desc}</p>
+        <div class="foot">
+          <div class="price">$${p.price}<s>$${p.was}</s></div>
+          <button class="btn btn-plum" onclick="alert('${p.name} added to bag (demo).')">Add to bag</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function tryProduct(name){
+  document.getElementById('studio').scrollIntoView();
+  document.getElementById('stageLabel').textContent = 'Trying on · '+name;
+}
+
+renderSwatches();
+renderProducts();
+const io = new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
