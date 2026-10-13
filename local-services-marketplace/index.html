@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nearby — Local Services Marketplace</title>
+<style>
+  :root{
+    --green:#0f5132;
+    --green-2:#1a7f4b;
+    --mint:#d8f3dc;
+    --lime:#95d5b2;
+    --sand:#fbfaf7;
+    --ink:#12211a;
+    --line:rgba(18,33,26,.12);
+    --gold:#e9b949;
+    --radius:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI",system-ui,-apple-system,sans-serif;background:var(--sand);color:var(--ink);line-height:1.6;overflow-x:hidden}
+  h1,h2,h3{font-family:"Trebuchet MS",Verdana,sans-serif;letter-spacing:-.02em}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 22px}
+  a{color:inherit;text-decoration:none}
+
+  header.nav{position:sticky;top:0;z-index:60;background:rgba(251,250,247,.8);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:70px;gap:20px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.2rem}
+  .logo .mark{width:36px;height:36px;border-radius:12px;background:var(--green);color:var(--lime);display:grid;place-items:center;font-size:1.1rem}
+  .nav-links{display:flex;gap:24px;font-size:.92rem;font-weight:600}
+  .nav-links a{opacity:.75;transition:.2s}
+  .nav-links a:hover{opacity:1;color:var(--green-2)}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:999px;font-weight:700;font-size:.9rem;border:none;cursor:pointer;transition:transform .18s,box-shadow .18s;font-family:inherit}
+  .btn-green{background:var(--green);color:#fff}
+  .btn-green:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(15,81,50,.3)}
+  .btn-lime{background:var(--lime);color:var(--green)}
+  .btn-lime:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(149,213,178,.5)}
+  .btn-ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+  .btn-ghost:hover{background:rgba(18,33,26,.05)}
+
+  /* HERO */
+  .hero{padding:64px 0 40px;position:relative;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:0;background:radial-gradient(700px 400px at 90% 0%,rgba(149,213,178,.4),transparent 65%),radial-gradient(500px 400px at 0% 100%,rgba(233,185,73,.18),transparent 70%);z-index:-1}
+  .hero h1{font-size:clamp(2.2rem,5vw,3.4rem);line-height:1.08;max-width:760px;margin-bottom:18px}
+  .hero h1 span{color:var(--green-2)}
+  .hero p{font-size:1.08rem;opacity:.78;max-width:560px;margin-bottom:28px}
+  .searchbar{display:flex;gap:10px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 8px 8px 20px;max-width:640px;box-shadow:0 14px 34px rgba(15,81,50,.1);flex-wrap:wrap}
+  .searchbar input{flex:1;border:none;outline:none;font-size:.95rem;font-family:inherit;background:transparent;min-width:180px;padding:8px 0}
+  .searchbar select{border:none;outline:none;font-family:inherit;font-size:.9rem;font-weight:600;background:transparent;color:var(--green);cursor:pointer}
+  .quick-tags{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+  .quick-tags button{background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:.82rem;font-weight:600;cursor:pointer;transition:.2s;font-family:inherit}
+  .quick-tags button:hover{border-color:var(--green-2);color:var(--green-2);transform:translateY(-2px)}
+
+  /* STATS STRIP */
+  .strip{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:44px}
+  .strip .s{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px;text-align:center}
+  .strip .s b{display:block;font-size:1.7rem;color:var(--green);font-family:"Trebuchet MS",sans-serif}
+  .strip .s span{font-size:.8rem;opacity:.65;font-weight:600}
+
+  section{padding:64px 0}
+  .sec-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:34px;gap:20px;flex-wrap:wrap}
+  .sec-head h2{font-size:clamp(1.7rem,3.4vw,2.3rem)}
+  .sec-head p{opacity:.7;max-width:520px}
+  .kicker{font-size:.76rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--green-2);display:block;margin-bottom:8px}
+
+  /* CATEGORY FILTER */
+  .cats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:30px}
+  .cat{padding:10px 18px;border-radius:999px;background:#fff;border:1.5px solid var(--line);font-weight:700;font-size:.86rem;cursor:pointer;transition:.2s;font-family:inherit;display:flex;align-items:center;gap:8px}
+  .cat.active{background:var(--green);color:#fff;border-color:var(--green)}
+  .cat:hover:not(.active){border-color:var(--green-2)}
+
+  /* PROVIDER GRID */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:transform .25s,box-shadow .25s;display:flex;flex-direction:column}
+  .card:hover{transform:translateY(-6px);box-shadow:0 20px 44px rgba(15,81,50,.13)}
+  .card .top{padding:20px 20px 0;display:flex;gap:14px;align-items:center}
+  .avatar{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;font-weight:800;font-size:1.2rem;color:#fff;flex-shrink:0}
+  .card .name{font-weight:800;font-size:1.02rem}
+  .card .role{font-size:.82rem;opacity:.65}
+  .card .body{padding:16px 20px;flex:1}
+  .card .desc{font-size:.88rem;opacity:.75;margin-bottom:14px}
+  .meta{display:flex;gap:14px;font-size:.8rem;font-weight:700;flex-wrap:wrap}
+  .meta .rate{color:var(--gold)}
+  .meta .dist{opacity:.6}
+  .tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+  .tags span{font-size:.72rem;font-weight:700;background:var(--mint);color:var(--green);padding:4px 10px;border-radius:999px}
+  .card .foot{padding:14px 20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+  .price{font-weight:800;color:var(--green)}
+  .price small{font-weight:600;opacity:.6;font-size:.72rem}
+  .badge{position:absolute;top:14px;right:14px;background:var(--gold);color:#3a2c00;font-size:.68rem;font-weight:800;padding:4px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:.05em}
+  .card{position:relative}
+
+  /* HOW IT WORKS */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .step{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:28px;position:relative}
+  .step .num{font-size:2.4rem;font-family:"Trebuchet MS",sans-serif;font-weight:800;color:var(--mint);line-height:1}
+  .step h3{margin:12px 0 8px;font-size:1.1rem}
+  .step p{font-size:.9rem;opacity:.72}
+
+  /* CTA */
+  .cta{background:var(--green);color:#fff;border-radius:28px;padding:52px;text-align:center;position:relative;overflow:hidden}
+  .cta::before{content:"";position:absolute;inset:0;background:radial-gradient(500px 300px at 20% 20%,rgba(149,213,178,.25),transparent 70%)}
+  .cta h2{font-size:clamp(1.7rem,3.4vw,2.4rem);margin-bottom:14px;position:relative}
+  .cta p{opacity:.8;max-width:520px;margin:0 auto 26px;position:relative}
+  .cta .btn{position:relative}
+
+  /* MODAL */
+  .modal-bg{position:fixed;inset:0;background:rgba(18,33,26,.55);backdrop-filter:blur(6px);display:none;place-items:center;z-index:100;padding:20px}
+  .modal-bg.open{display:grid}
+  .modal{background:#fff;border-radius:24px;max-width:460px;width:100%;padding:30px;animation:pop .3s}
+  @keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+  .modal h3{font-size:1.3rem;margin-bottom:6px}
+  .modal .sub{opacity:.65;font-size:.88rem;margin-bottom:20px}
+  .modal label{display:block;font-size:.8rem;font-weight:700;margin:12px 0 6px}
+  .modal input,.modal select,.modal textarea{width:100%;padding:11px 13px;border-radius:12px;border:1.5px solid var(--line);font-family:inherit;font-size:.9rem}
+  .modal input:focus,.modal select:focus,.modal textarea:focus{outline:none;border-color:var(--green-2)}
+  .modal .row{display:flex;gap:12px;margin-top:22px}
+  .modal .row .btn{flex:1;justify-content:center}
+
+  footer{background:var(--ink);color:#fff;padding:50px 0 30px}
+  .foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;margin-bottom:34px}
+  footer h4{font-size:1.2rem;margin-bottom:12px}
+  footer p,footer a{opacity:.6;font-size:.88rem}
+  footer a{display:block;margin-bottom:8px;transition:.2s}
+  footer a:hover{opacity:1}
+  .foot-bottom{border-top:1px solid rgba(255,255,255,.12);padding-top:22px;font-size:.8rem;opacity:.5;text-align:center}
+
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s}
+  .reveal.in{opacity:1;transform:none}
+
+  @media(max-width:960px){
+    .grid,.steps,.strip{grid-template-columns:1fr 1fr}
+    .nav-links{display:none}
+    .foot-grid{grid-template-columns:1fr}
+  }
+  @media(max-width:620px){
+    .grid,.steps,.strip{grid-template-columns:1fr}
+    .cta{padding:34px 22px}
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="logo"><span class="mark">◉</span> Nearby</div>
+    <nav class="nav-links">
+      <a href="#browse">Browse</a>
+      <a href="#how">How it works</a>
+      <a href="#join">Become a pro</a>
+    </nav>
+    <button class="btn btn-green" onclick="openModal('Post a request')">Post a request</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="kicker">Trusted local pros, minutes away</span>
+    <h1>Find the right <span>local expert</span> for any job — today.</h1>
+    <p>Tutors, designers, repair workers, photographers and freelancers in your neighbourhood. Verified reviews, transparent prices, instant booking.</p>
+    <div class="searchbar">
+      <input id="searchInput" placeholder="What do you need help with?" oninput="filterCards()">
+      <select id="searchCat" onchange="filterCards()">
+        <option value="all">All categories</option>
+        <option value="Tutoring">Tutoring</option>
+        <option value="Design">Design</option>
+        <option value="Repair">Repair</option>
+        <option value="Photography">Photography</option>
+        <option value="Freelance">Freelance</option>
+      </select>
+      <button class="btn btn-lime" onclick="filterCards()">Search</button>
+    </div>
+    <div class="quick-tags">
+      <button onclick="quickSearch('Tutoring')">Math tutor</button>
+      <button onclick="quickSearch('Repair')">Fix my laptop</button>
+      <button onclick="quickSearch('Photography')">Event photographer</button>
+      <button onclick="quickSearch('Design')">Logo design</button>
+      <button onclick="quickSearch('Freelance')">Resume help</button>
+    </div>
+    <div class="strip">
+      <div class="s"><b>12,400+</b><span>Verified pros</span></div>
+      <div class="s"><b>4.9★</b><span>Average rating</span></div>
+      <div class="s"><b>18 min</b><span>Median response</span></div>
+      <div class="s"><b>96%</b><span>Jobs completed</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="browse">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="kicker">Browse by category</span>
+        <h2>Pros near you</h2>
+      </div>
+      <p id="resultCount">Showing 9 of 9 providers</p>
+    </div>
+    <div class="cats" id="cats">
+      <button class="cat active" data-cat="all" onclick="setCat(this)">✦ All</button>
+      <button class="cat" data-cat="Tutoring" onclick="setCat(this)">📚 Tutoring</button>
+      <button class="cat" data-cat="Design" onclick="setCat(this)">🎨 Design</button>
+      <button class="cat" data-cat="Repair" onclick="setCat(this)">🔧 Repair</button>
+      <button class="cat" data-cat="Photography" onclick="setCat(this)">📷 Photography</button>
+      <button class="cat" data-cat="Freelance" onclick="setCat(this)">💼 Freelance</button>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<section id="how" style="background:linear-gradient(180deg,transparent,rgba(216,243,220,.5),transparent)">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><span class="kicker">Simple &amp; safe</span><h2>How Nearby works</h2></div>
+      <p>From request to review in three steps — with payment held safely until the job is done.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal"><div class="num">01</div><h3>Describe the job</h3><p>Post a request with your budget and timing. Nearby matches you with available pros in your area instantly.</p></div>
+      <div class="step reveal"><div class="num">02</div><h3>Compare &amp; book</h3><p>Review profiles, verified ratings and fixed prices. Chat before you commit, then book a slot that suits you.</p></div>
+      <div class="step reveal"><div class="num">03</div><h3>Pay when happy</h3><p>Funds are held in escrow and released only after you confirm the work is complete. Leave a review to help others.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="join">
+  <div class="wrap">
+    <div class="cta reveal">
+      <h2>Are you a local pro?</h2>
+      <p>Join 12,000+ freelancers earning on Nearby. Set your own rates, choose your jobs, get paid fast.</p>
+      <button class="btn btn-lime" onclick="openModal('Become a pro')">Start earning today →</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div><h4>Nearby</h4><p>The local services marketplace connecting your neighbourhood's best talent with the people who need them.</p></div>
+      <div><h4 style="font-size:1rem">Explore</h4><a href="#browse">Browse pros</a><a href="#how">How it works</a><a href="#join">Become a pro</a></div>
+      <div><h4 style="font-size:1rem">Support</h4><a href="#">Help centre</a><a href="#">Trust &amp; safety</a><a href="#">Contact</a></div>
+    </div>
+    <div class="foot-bottom">© 2026 Nearby. A demo concept site. All providers and reviews are sample content.</div>
+  </div>
+</footer>
+
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h3 id="modalTitle">Post a request</h3>
+    <p class="sub">Tell us what you need — we'll match you with local pros in minutes.</p>
+    <label>Your name</label>
+    <input placeholder="e.g. Alex Rivera">
+    <label>What do you need?</label>
+    <select><option>Tutoring</option><option>Design</option><option>Repair</option><option>Photography</option><option>Freelance</option></select>
+    <label>Details</label>
+    <textarea rows="3" placeholder="Describe the job, timing and budget…"></textarea>
+    <div class="row">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-green" onclick="submitModal()">Send request</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const providers = [
+  {name:"Priya Sharma",role:"Maths & Physics Tutor",cat:"Tutoring",desc:"Ex-engineer turned tutor. 8 years helping students crack calculus and mechanics with visual methods.",rate:4.9,dist:"0.8 km",price:28,unit:"/hr",tags:["Calculus","Physics","GCSE"],color:"#1a7f4b",badge:"Top rated"},
+  {name:"Marcus Lee",role:"Brand & Logo Designer",cat:"Design",desc:"I build clean, memorable brand identities for startups and small businesses. 3-day turnaround.",rate:4.8,dist:"2.1 km",price:180,unit:"/project",tags:["Logo","Branding","Figma"],color:"#0f5132"},
+  {name:"Sofia Alvarez",role:"Laptop & Phone Repair",cat:"Repair",desc:"Certified technician. Screen replacements, battery swaps and data recovery — same-day service.",rate:4.9,dist:"1.4 km",price:45,unit:"/visit",tags:["Screens","Batteries","Data"],color:"#2d6a4f",badge:"Fast reply"},
+  {name:"Daniel Okafor",role:"Event Photographer",cat:"Photography",desc:"Weddings, graduations and corporate events. 500+ shoots, edited gallery delivered in 48 hours.",rate:5.0,dist:"3.6 km",price:320,unit:"/event",tags:["Weddings","Portraits","Events"],color:"#40916c"},
+  {name:"Hana Kim",role:"Resume & LinkedIn Coach",cat:"Freelance",desc:"Former recruiter. I rewrite resumes that get interviews — 92% of clients land one within a month.",rate:4.9,dist:"Online",price:75,unit:"/session",tags:["Resume","LinkedIn","Interview"],color:"#1b4332"},
+  {name:"Tom Becker",role:"Guitar & Piano Teacher",cat:"Tutoring",desc:"Berklee grad teaching all ages. Learn songs you love from week one, theory woven in naturally.",rate:4.7,dist:"1.9 km",price:32,unit:"/hr",tags:["Guitar","Piano","Theory"],color:"#2d6a4f"},
+  {name:"Aisha Rahman",role:"Interior Stylist",cat:"Design",desc:"I turn small spaces into calm, functional homes. Mood boards, shopping lists and layout plans.",rate:4.8,dist:"4.2 km",price:140,unit:"/room",tags:["Interiors","Moodboard","Styling"],color:"#40916c"},
+  {name:"Leo Martins",role:"Bike & Appliance Repair",cat:"Repair",desc:"Mobile mechanic covering the whole city. Bikes, washing machines, dishwashers — fixed on site.",rate:4.6,dist:"2.8 km",price:38,unit:"/visit",tags:["Bikes","Appliances","Mobile"],color:"#1a7f4b"},
+  {name:"Nina Petrova",role:"Social Media Manager",cat:"Freelance",desc:"I grow small brands on Instagram and TikTok with content calendars and short-form video strategy.",rate:4.9,dist:"Online",price:220,unit:"/month",tags:["Instagram","TikTok","Content"],color:"#0f5132",badge:"Rising star"}
+];
+
+let activeCat = 'all';
+function initials(n){ return n.split(' ').map(w=>w[0]).join('').slice(0,2); }
+
+function renderCards(list){
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  if(!list.length){ grid.innerHTML = '<p style="opacity:.6;grid-column:1/-1;text-align:center;padding:40px">No providers match that search. Try another category.</p>'; return; }
+  list.forEach(p=>{
+    const c = document.createElement('div');
+    c.className = 'card reveal in';
+    c.innerHTML = `
+      ${p.badge?`<span class="badge">${p.badge}</span>`:''}
+      <div class="top">
+        <div class="avatar" style="background:${p.color}">${initials(p.name)}</div>
+        <div><div class="name">${p.name}</div><div class="role">${p.role}</div></div>
+      </div>
+      <div class="body">
+        <p class="desc">${p.desc}</p>
+        <div class="meta"><span class="rate">★ ${p.rate.toFixed(1)}</span><span class="dist">📍 ${p.dist}</span></div>
+        <div class="tags">${p.tags.map(t=>`<span>${t}</span>`).join('')}</div>
+      </div>
+      <div class="foot">
+        <div class="price">$${p.price}<small>${p.unit}</small></div>
+        <button class="btn btn-green" onclick="openModal('Book ${p.name}')">Book</button>
+      </div>`;
+    grid.appendChild(c);
+  });
+  document.getElementById('resultCount').textContent = 'Showing '+list.length+' of '+providers.length+' providers';
+}
+
+function filterCards(){
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const cat = document.getElementById('searchCat').value;
+  const list = providers.filter(p=>{
+    const catOk = (cat==='all' || p.cat===cat) && (activeCat==='all' || p.cat===activeCat);
+    const qOk = !q || (p.name+p.role+p.desc+p.tags.join(' ')).toLowerCase().includes(q);
+    return catOk && qOk;
+  });
+  renderCards(list);
+}
+function setCat(el){
+  document.querySelectorAll('.cat').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  activeCat = el.dataset.cat;
+  document.getElementById('searchCat').value = activeCat;
+  filterCards();
+}
+function quickSearch(cat){
+  activeCat = cat;
+  document.querySelectorAll('.cat').forEach(c=>c.classList.toggle('active', c.dataset.cat===cat));
+  document.getElementById('searchCat').value = cat;
+  document.getElementById('searchInput').value = '';
+  filterCards();
+  document.getElementById('browse').scrollIntoView();
+}
+
+function openModal(title){
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBg').classList.add('open');
+}
+function closeModal(){ document.getElementById('modalBg').classList.remove('open'); }
+function submitModal(){
+  const t = document.getElementById('modalTitle');
+  t.textContent = 'Request sent ✓';
+  setTimeout(closeModal, 1100);
+}
+
+renderCards(providers);
+
+const io = new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

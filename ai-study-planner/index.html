@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudyForge — AI Study Planner</title>
+<style>
+  :root{
+    --ink:#0d1b2a;
+    --ink-2:#1b2a41;
+    --paper:#f7f5f0;
+    --amber:#f4a259;
+    --amber-deep:#e07a2f;
+    --teal:#2a9d8f;
+    --line:rgba(13,27,42,.12);
+    --glass:rgba(255,255,255,.55);
+    --radius:20px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"Segoe UI",system-ui,-apple-system,sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.display{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.02em}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+  a{color:inherit;text-decoration:none}
+
+  /* NAV */
+  header.nav{
+    position:sticky;top:0;z-index:50;
+    backdrop-filter:blur(14px);
+    background:rgba(247,245,240,.72);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:68px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.15rem;font-family:Georgia,serif}
+  .logo .mark{
+    width:34px;height:34px;border-radius:10px;
+    background:var(--ink);color:var(--amber);
+    display:grid;place-items:center;font-size:1rem;
+  }
+  .nav-links{display:flex;gap:26px;font-size:.92rem;font-weight:600}
+  .nav-links a{opacity:.75;transition:opacity .2s}
+  .nav-links a:hover{opacity:1}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:11px 20px;border-radius:999px;font-weight:700;font-size:.9rem;
+    border:none;cursor:pointer;transition:transform .18s,box-shadow .18s;
+  }
+  .btn-primary{background:var(--ink);color:#fff}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(13,27,42,.28)}
+  .btn-amber{background:var(--amber);color:var(--ink)}
+  .btn-amber:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(224,122,47,.35)}
+  .btn-ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+  .btn-ghost:hover{background:rgba(13,27,42,.05)}
+
+  /* HERO */
+  .hero{position:relative;padding:80px 0 60px;overflow:hidden}
+  .hero::before{
+    content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(600px 400px at 85% 10%,rgba(244,162,89,.28),transparent 70%),
+      radial-gradient(500px 400px at 5% 80%,rgba(42,157,143,.18),transparent 70%);
+    z-index:-1;
+  }
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:52px;align-items:center}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--glass);backdrop-filter:blur(10px);
+    border:1px solid var(--line);border-radius:999px;
+    padding:7px 15px;font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    margin-bottom:22px;
+  }
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--teal);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.4)}}
+  .hero h1{font-size:clamp(2.3rem,5vw,3.6rem);line-height:1.05;margin-bottom:20px}
+  .hero h1 em{font-style:normal;color:var(--amber-deep);position:relative}
+  .hero h1 em::after{content:"";position:absolute;left:0;bottom:4px;width:100%;height:8px;background:rgba(244,162,89,.35);z-index:-1;border-radius:4px}
+  .hero p.lead{font-size:1.08rem;opacity:.8;max-width:520px;margin-bottom:30px}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:34px}
+  .hero-stats{display:flex;gap:34px;flex-wrap:wrap}
+  .hero-stats .s b{display:block;font-size:1.6rem;font-family:Georgia,serif}
+  .hero-stats .s span{font-size:.8rem;opacity:.65;font-weight:600}
+
+  /* GLASS CARD / PLANNER PREVIEW */
+  .glass{
+    background:var(--glass);backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,.7);
+    border-radius:var(--radius);
+    box-shadow:0 20px 50px rgba(13,27,42,.12);
+  }
+  .planner-card{padding:24px}
+  .planner-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+  .planner-head h3{font-size:1.05rem}
+  .planner-head .tag{font-size:.72rem;font-weight:700;background:rgba(42,157,143,.15);color:var(--teal);padding:4px 10px;border-radius:999px}
+  .task{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;background:rgba(255,255,255,.6);margin-bottom:10px;transition:transform .2s}
+  .task:hover{transform:translateX(4px)}
+  .task .chk{width:22px;height:22px;border-radius:7px;border:2px solid var(--line);display:grid;place-items:center;flex-shrink:0;cursor:pointer;transition:.2s}
+  .task.done .chk{background:var(--teal);border-color:var(--teal);color:#fff}
+  .task.done .t-name{text-decoration:line-through;opacity:.5}
+  .task .t-name{font-weight:600;font-size:.9rem}
+  .task .t-meta{font-size:.74rem;opacity:.6}
+  .task .t-time{margin-left:auto;font-size:.74rem;font-weight:700;color:var(--amber-deep);white-space:nowrap}
+  .progress-ring{display:flex;align-items:center;gap:14px;margin-top:16px;padding-top:16px;border-top:1px dashed var(--line)}
+  .ring{width:56px;height:56px;border-radius:50%;background:conic-gradient(var(--amber) 0deg,var(--amber) 0deg,rgba(13,27,42,.08) 0deg);display:grid;place-items:center;font-size:.8rem;font-weight:800;transition:background .6s}
+  .ring span{background:var(--paper);width:42px;height:42px;border-radius:50%;display:grid;place-items:center}
+
+  /* SECTIONS */
+  section{padding:70px 0}
+  .sec-head{text-align:center;max-width:640px;margin:0 auto 46px}
+  .sec-head h2{font-size:clamp(1.8rem,3.6vw,2.5rem);margin-bottom:12px}
+  .sec-head p{opacity:.72}
+  .kicker{font-size:.78rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--amber-deep);margin-bottom:10px;display:block}
+
+  .features{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .feature{padding:28px;border-radius:var(--radius);background:#fff;border:1px solid var(--line);transition:transform .25s,box-shadow .25s}
+  .feature:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(13,27,42,.1)}
+  .feature .ic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:1.4rem;margin-bottom:16px;background:rgba(244,162,89,.16)}
+  .feature h3{font-size:1.15rem;margin-bottom:8px}
+  .feature p{font-size:.9rem;opacity:.72}
+
+  /* FLASHCARD */
+  .flash-wrap{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+  .flashcard{
+    perspective:1200px;height:280px;cursor:pointer;
+  }
+  .flash-inner{position:relative;width:100%;height:100%;transition:transform .7s cubic-bezier(.4,.2,.2,1);transform-style:preserve-3d}
+  .flashcard.flipped .flash-inner{transform:rotateY(180deg)}
+  .flash-face{
+    position:absolute;inset:0;backface-visibility:hidden;border-radius:24px;
+    display:grid;place-items:center;text-align:center;padding:34px;
+    box-shadow:0 20px 50px rgba(13,27,42,.16);
+  }
+  .flash-front{background:var(--ink);color:#fff}
+  .flash-back{background:var(--amber);color:var(--ink);transform:rotateY(180deg)}
+  .flash-face .q{font-size:1.5rem;font-family:Georgia,serif;line-height:1.3}
+  .flash-face .hint{position:absolute;bottom:18px;font-size:.72rem;opacity:.6;letter-spacing:.08em;text-transform:uppercase}
+  .flash-controls{display:flex;gap:12px;margin-top:20px;justify-content:center}
+
+  /* QUIZ */
+  .quiz{max-width:720px;margin:0 auto;padding:32px}
+  .quiz .q-text{font-size:1.2rem;font-weight:700;margin-bottom:20px;font-family:Georgia,serif}
+  .opt{display:block;width:100%;text-align:left;padding:15px 18px;border-radius:14px;border:1.5px solid var(--line);background:#fff;margin-bottom:11px;cursor:pointer;font-size:.95rem;font-weight:600;transition:.2s;font-family:inherit}
+  .opt:hover{border-color:var(--amber);background:rgba(244,162,89,.07)}
+  .opt.correct{background:rgba(42,157,143,.15);border-color:var(--teal);color:#1d6b62}
+  .opt.wrong{background:rgba(224,122,47,.12);border-color:var(--amber-deep)}
+  .quiz-foot{display:flex;justify-content:space-between;align-items:center;margin-top:18px;font-size:.85rem;font-weight:700}
+  .bar{height:8px;background:rgba(13,27,42,.08);border-radius:999px;overflow:hidden;margin-top:14px}
+  .bar i{display:block;height:100%;width:0;background:var(--teal);border-radius:999px;transition:width .4s}
+
+  /* SCHEDULE GENERATOR */
+  .gen{display:grid;grid-template-columns:340px 1fr;gap:30px;align-items:start}
+  .gen-form{padding:26px}
+  .gen-form label{display:block;font-size:.8rem;font-weight:700;margin-bottom:6px;margin-top:14px}
+  .gen-form input,.gen-form select{width:100%;padding:11px 13px;border-radius:12px;border:1.5px solid var(--line);font-family:inherit;font-size:.9rem;background:#fff}
+  .gen-form input:focus,.gen-form select:focus{outline:none;border-color:var(--amber)}
+  .gen-out{padding:26px;min-height:300px}
+  .gen-out h3{margin-bottom:16px;font-size:1.1rem}
+  .slot{display:flex;gap:14px;padding:12px 0;border-bottom:1px dashed var(--line);animation:fadeUp .4s both}
+  .slot:last-child{border-bottom:none}
+  .slot .time{font-weight:800;font-size:.82rem;color:var(--amber-deep);min-width:78px}
+  .slot .sub{font-weight:700;font-size:.9rem}
+  .slot .det{font-size:.78rem;opacity:.65}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  footer{background:var(--ink);color:#fff;padding:50px 0 30px;margin-top:40px}
+  .foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;margin-bottom:34px}
+  footer h4{font-family:Georgia,serif;font-size:1.3rem;margin-bottom:12px}
+  footer p,footer a{opacity:.65;font-size:.88rem}
+  footer a{display:block;margin-bottom:8px;transition:opacity .2s}
+  footer a:hover{opacity:1}
+  .foot-bottom{border-top:1px solid rgba(255,255,255,.12);padding-top:22px;font-size:.8rem;opacity:.5;text-align:center}
+
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s,transform .7s}
+  .reveal.in{opacity:1;transform:none}
+
+  @media(max-width:900px){
+    .hero-grid,.flash-wrap,.gen{grid-template-columns:1fr}
+    .features{grid-template-columns:1fr}
+    .nav-links{display:none}
+    .foot-grid{grid-template-columns:1fr}
+    .hero{padding:50px 0 40px}
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="logo"><span class="mark">SF</span> StudyForge</div>
+    <nav class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#flashcards">Flashcards</a>
+      <a href="#quiz">Quiz</a>
+      <a href="#planner">Planner</a>
+    </nav>
+    <button class="btn btn-primary" onclick="document.getElementById('planner').scrollIntoView()">Start free</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow"><span class="dot"></span> AI-powered learning</span>
+      <h1>Study smarter, not <em>longer</em>.</h1>
+      <p class="lead">StudyForge builds a personalized schedule around your deadlines, generates flashcards from your notes, quizzes you at the perfect moment, and tracks every gain.</p>
+      <div class="hero-cta">
+        <button class="btn btn-amber" onclick="document.getElementById('planner').scrollIntoView()">Build my plan →</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('flashcards').scrollIntoView()">Try a flashcard</button>
+      </div>
+      <div class="hero-stats">
+        <div class="s"><b>92%</b><span>Recall after 4 weeks</span></div>
+        <div class="s"><b>3.4×</b><span>Faster revision</span></div>
+        <div class="s"><b>48k</b><span>Students planning</span></div>
+      </div>
+    </div>
+    <div class="glass planner-card">
+      <div class="planner-head">
+        <h3>Today · Tue, Oct 13</h3>
+        <span class="tag">AI adjusted</span>
+      </div>
+      <div class="task done" onclick="toggleTask(this)">
+        <span class="chk">✓</span>
+        <div><div class="t-name">Organic Chemistry — Ch. 7</div><div class="t-meta">Spaced review · 2nd pass</div></div>
+        <span class="t-time">25 min</span>
+      </div>
+      <div class="task" onclick="toggleTask(this)">
+        <span class="chk"></span>
+        <div><div class="t-name">Calculus — Integration drills</div><div class="t-meta">Weak area detected</div></div>
+        <span class="t-time">40 min</span>
+      </div>
+      <div class="task" onclick="toggleTask(this)">
+        <span class="chk"></span>
+        <div><div class="t-name">History — Essay outline</div><div class="t-meta">Due in 3 days</div></div>
+        <span class="t-time">30 min</span>
+      </div>
+      <div class="task" onclick="toggleTask(this)">
+        <span class="chk"></span>
+        <div><div class="t-name">Spanish — Vocab flashcards</div><div class="t-meta">18 cards queued</div></div>
+        <span class="t-time">15 min</span>
+      </div>
+      <div class="progress-ring">
+        <div class="ring" id="ring"><span id="ringPct">0%</span></div>
+        <div><div style="font-weight:700;font-size:.9rem">Daily focus goal</div><div style="font-size:.78rem;opacity:.65">110 min planned · 25 done</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">Everything in one place</span>
+      <h2>Four tools that learn how you learn</h2>
+      <p>No more juggling apps. StudyForge adapts to your pace, your subjects, and your exam dates.</p>
+    </div>
+    <div class="features">
+      <div class="feature reveal"><div class="ic">🗓️</div><h3>Personalized schedules</h3><p>Tell us your deadlines and available hours — the AI spreads topics across days using spaced repetition and interleaving.</p></div>
+      <div class="feature reveal"><div class="ic">🃏</div><h3>Auto flashcards</h3><p>Paste your notes and get clean question/answer cards instantly, with difficulty ratings that tune the review queue.</p></div>
+      <div class="feature reveal"><div class="ic">🎯</div><h3>Adaptive quizzes</h3><p>Short quizzes target your weakest topics first, so every minute of practice moves your grade.</p></div>
+      <div class="feature reveal"><div class="ic">📈</div><h3>Progress tracking</h3><p>Streaks, mastery heatmaps and weekly reports show exactly what's improving and what needs another pass.</p></div>
+      <div class="feature reveal"><div class="ic">🔔</div><h3>Smart reminders</h3><p>Nudges arrive right before you'd forget — not on a fixed timer that ignores your real retention.</p></div>
+      <div class="feature reveal"><div class="ic">👥</div><h3>Study rooms</h3><p>Share a deck with classmates, run a live quiz, and compare mastery without sharing your private notes.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="flashcards" style="background:linear-gradient(180deg,transparent,rgba(244,162,89,.08),transparent)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">Try it now</span>
+      <h2>Flip a flashcard</h2>
+      <p>Click the card to reveal the answer. This is exactly how your review queue feels.</p>
+    </div>
+    <div class="flash-wrap">
+      <div>
+        <div class="flashcard" id="flashcard" onclick="flipCard()">
+          <div class="flash-inner">
+            <div class="flash-face flash-front">
+              <div class="q" id="fcQ">What is the powerhouse of the cell?</div>
+              <div class="hint">Click to reveal</div>
+            </div>
+            <div class="flash-face flash-back">
+              <div class="q" id="fcA">The mitochondrion — it produces ATP through cellular respiration.</div>
+              <div class="hint">Click to flip back</div>
+            </div>
+          </div>
+        </div>
+        <div class="flash-controls">
+          <button class="btn btn-ghost" onclick="nextCard()">Next card →</button>
+          <button class="btn btn-primary" onclick="flipCard()">Flip</button>
+        </div>
+      </div>
+      <div class="reveal">
+        <h3 style="font-size:1.5rem;margin-bottom:14px">Cards that build themselves</h3>
+        <p style="opacity:.75;margin-bottom:16px">Drop in a lecture PDF, a chapter summary, or a messy paragraph of notes. StudyForge extracts the key facts and turns them into a review deck — then schedules each card the day before you'd forget it.</p>
+        <ul style="list-style:none;display:grid;gap:12px">
+          <li style="display:flex;gap:10px"><span style="color:var(--teal);font-weight:800">✓</span> Cloze deletion &amp; Q/A formats</li>
+          <li style="display:flex;gap:10px"><span style="color:var(--teal);font-weight:800">✓</span> Image occlusion for diagrams</li>
+          <li style="display:flex;gap:10px"><span style="color:var(--teal);font-weight:800">✓</span> Difficulty auto-tuning per card</li>
+          <li style="display:flex;gap:10px"><span style="color:var(--teal);font-weight:800">✓</span> Export to Anki in one click</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="quiz">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">Adaptive practice</span>
+      <h2>Take a quick quiz</h2>
+      <p>Three questions. The AI would normally pick these from your weakest topics.</p>
+    </div>
+    <div class="glass quiz reveal">
+      <div class="q-text" id="quizQ">Loading…</div>
+      <div id="quizOpts"></div>
+      <div class="bar"><i id="quizBar"></i></div>
+      <div class="quiz-foot">
+        <span id="quizScore">Score: 0 / 0</span>
+        <button class="btn btn-amber" id="quizNext" onclick="nextQuestion()" style="display:none">Next →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="planner" style="background:var(--ink);color:#fff">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker" style="color:var(--amber)">Build your plan</span>
+      <h2 style="color:#fff">Generate a study schedule</h2>
+      <p style="color:rgba(255,255,255,.7)">Enter your subjects and hours — we'll lay out a realistic week.</p>
+    </div>
+    <div class="gen">
+      <div class="glass gen-form" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15)">
+        <label style="color:#fff">Subjects (comma separated)</label>
+        <input id="gSubjects" value="Calculus, Organic Chemistry, History, Spanish">
+        <label style="color:#fff">Hours available per day</label>
+        <input id="gHours" type="number" value="3" min="1" max="12">
+        <label style="color:#fff">Days until exam</label>
+        <input id="gDays" type="number" value="14" min="1" max="120">
+        <label style="color:#fff">Study style</label>
+        <select id="gStyle">
+          <option>Balanced mix</option>
+          <option>Deep focus blocks</option>
+          <option>Short frequent bursts</option>
+        </select>
+        <button class="btn btn-amber" style="width:100%;justify-content:center;margin-top:20px" onclick="generatePlan()">Generate my week →</button>
+      </div>
+      <div class="glass gen-out" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15)">
+        <h3 style="color:#fff">Your AI-generated week</h3>
+        <div id="genOut" style="color:rgba(255,255,255,.85)">
+          <p style="opacity:.6;font-size:.9rem">Fill the form and hit generate to see your personalized schedule.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <h4>StudyForge</h4>
+        <p>The AI study planner that adapts to how you actually learn. Built for students who want results, not busywork.</p>
+      </div>
+      <div>
+        <h4 style="font-size:1rem">Product</h4>
+        <a href="#features">Features</a>
+        <a href="#flashcards">Flashcards</a>
+        <a href="#quiz">Quizzes</a>
+        <a href="#planner">Planner</a>
+      </div>
+      <div>
+        <h4 style="font-size:1rem">Company</h4>
+        <a href="#">About</a>
+        <a href="#">Blog</a>
+        <a href="#">Careers</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+    <div class="foot-bottom">© 2026 StudyForge. A demo concept site. All data shown is sample content.</div>
+  </div>
+</footer>
+
+<script>
+/* ---- Task toggle + progress ring ---- */
+function toggleTask(el){
+  el.classList.toggle('done');
+  const chk = el.querySelector('.chk');
+  chk.textContent = el.classList.contains('done') ? '✓' : '';
+  updateRing();
+}
+function updateRing(){
+  const tasks = document.querySelectorAll('.task');
+  const done = document.querySelectorAll('.task.done').length;
+  const pct = Math.round(done/tasks.length*100);
+  const ring = document.getElementById('ring');
+  ring.style.background = 'conic-gradient(var(--amber) '+(pct*3.6)+'deg, rgba(13,27,42,.08) 0deg)';
+  document.getElementById('ringPct').textContent = pct+'%';
+}
+updateRing();
+
+/* ---- Flashcards ---- */
+const cards = [
+  {q:"What is the powerhouse of the cell?",a:"The mitochondrion — it produces ATP through cellular respiration."},
+  {q:"State the derivative of sin(x).",a:"cos(x). The derivative of cos(x) is −sin(x)."},
+  {q:"What year did the Berlin Wall fall?",a:"1989 — on 9 November, paving the way for German reunification."},
+  {q:"Translate: 'I would like a coffee, please.'",a:"Me gustaría un café, por favor."},
+  {q:"What is the integral of 1/x dx?",a:"ln|x| + C, valid for x ≠ 0."}
+];
+let ci = 0;
+function flipCard(){ document.getElementById('flashcard').classList.toggle('flipped'); }
+function nextCard(){
+  ci = (ci+1) % cards.length;
+  const fc = document.getElementById('flashcard');
+  fc.classList.remove('flipped');
+  setTimeout(()=>{
+    document.getElementById('fcQ').textContent = cards[ci].q;
+    document.getElementById('fcA').textContent = cards[ci].a;
+  }, 200);
+}
+
+/* ---- Quiz ---- */
+const quiz = [
+  {q:"Which technique spaces reviews over increasing intervals?",o:["Cramming","Spaced repetition","Highlighting","Rereading"],c:1},
+  {q:"What does 'interleaving' mean in studying?",o:["Studying one topic for hours","Mixing related topics in one session","Skipping hard topics","Only reviewing at night"],c:1},
+  {q:"Active recall is most effective when…",o:["You read the answer first","You try to retrieve before checking","You copy notes verbatim","You listen to lectures twice"],c:1}
+];
+let qi = 0, score = 0, answered = false;
+function renderQuestion(){
+  answered = false;
+  const q = quiz[qi];
+  document.getElementById('quizQ').textContent = q.q;
+  const box = document.getElementById('quizOpts');
+  box.innerHTML = '';
+  q.o.forEach((opt,i)=>{
+    const b = document.createElement('button');
+    b.className = 'opt';
+    b.textContent = opt;
+    b.onclick = ()=>answer(i,b);
+    box.appendChild(b);
+  });
+  document.getElementById('quizNext').style.display = 'none';
+  document.getElementById('quizBar').style.width = (qi/quiz.length*100)+'%';
+}
+function answer(i,btn){
+  if(answered) return;
+  answered = true;
+  const q = quiz[qi];
+  const opts = document.querySelectorAll('#quizOpts .opt');
+  opts[q.c].classList.add('correct');
+  if(i !== q.c) btn.classList.add('wrong'); else score++;
+  document.getElementById('quizScore').textContent = 'Score: '+score+' / '+(qi+1);
+  document.getElementById('quizNext').style.display = 'inline-flex';
+  document.getElementById('quizNext').textContent = (qi === quiz.length-1) ? 'See result →' : 'Next →';
+}
+function nextQuestion(){
+  if(qi < quiz.length-1){ qi++; renderQuestion(); }
+  else {
+    document.getElementById('quizQ').textContent = 'You scored '+score+' / '+quiz.length+' 🎉';
+    document.getElementById('quizOpts').innerHTML = '<p style="opacity:.7">Nice work. In the full app, the AI would now queue the topics you missed for tomorrow.</p>';
+    document.getElementById('quizNext').style.display = 'none';
+    document.getElementById('quizBar').style.width = '100%';
+  }
+}
+renderQuestion();
+
+/* ---- Schedule generator ---- */
+function generatePlan(){
+  const subjects = document.getElementById('gSubjects').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const hours = parseInt(document.getElementById('gHours').value)||3;
+  const days = parseInt(document.getElementById('gDays').value)||14;
+  const style = document.getElementById('gStyle').value;
+  const out = document.getElementById('genOut');
+  if(!subjects.length){ out.innerHTML = '<p style="opacity:.7">Add at least one subject.</p>'; return; }
+  const blockLen = style === 'Deep focus blocks' ? 50 : style === 'Short frequent bursts' ? 20 : 35;
+  const perDay = Math.max(1, Math.floor(hours*60/blockLen));
+  const dayNames = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  let html = '<p style="opacity:.7;font-size:.85rem;margin-bottom:14px">'+days+' days to exam · '+perDay+' blocks/day · '+blockLen+'-min sessions · '+style+'</p>';
+  let idx = 0;
+  for(let d=0; d<Math.min(7,days); d++){
+    html += '<div style="margin-bottom:14px"><div style="font-weight:800;font-size:.8rem;color:var(--amber);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px">Day '+(d+1)+' · '+dayNames[d%7]+'</div>';
+    for(let b=0;b<perDay;b++){
+      const subj = subjects[idx % subjects.length];
+      const startH = 9 + b*Math.ceil(blockLen/60);
+      const label = String(startH).padStart(2,'0')+':00';
+      const focus = (idx % 3 === 0) ? 'New material' : (idx % 3 === 1) ? 'Active recall' : 'Spaced review';
+      html += '<div class="slot" style="animation-delay:'+(idx*0.03)+'s"><span class="time">'+label+'</span><div><div class="sub">'+subj+'</div><div class="det">'+focus+' · '+blockLen+' min</div></div></div>';
+      idx++;
+    }
+    html += '</div>';
+  }
+  html += '<p style="opacity:.6;font-size:.8rem;margin-top:10px">Showing first 7 days of your '+days+'-day plan. The full app exports this to your calendar.</p>';
+  out.innerHTML = html;
+}
+
+/* ---- Scroll reveal ---- */
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+},{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
